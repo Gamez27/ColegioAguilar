@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Ingenieria en Sistemas Computacionales - Colegio Aguilas">
+    <link rel="icon" href="img/icono.png" type="image/png">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap">
+    <link rel="stylesheet" href="Estilos/styles.css">
+    <title>Sistemas Computacionales - Colegio Aguilas</title>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <div class="icono">
+                <a href="index.html"><img src="img/icono.png" alt="Logo"></a>
+            </div>
+            <ul class="botonesNav">
+                <a href="nosotros.html">NOSOTROS</a>
+                <a href="admisiones.html">ADMISIONES</a>
+                <a href="campus.html">CAMPUS</a>
+                <a href="inscripcion.html">INSCRIBETE</a>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Banner principal de la carrera -->
+    <section class="carrera-banner">
+        <div class="carrera-banner-contenido">
+            <span class="nom_seccion">--- INGENIERIA</span>
+            <h1>Ingenieria en Sistemas Computacionales</h1>
+            <p>Forma parte de la generacion de profesionales que diseña el futuro tecnologico. 
+               Aprende a desarrollar software, administrar redes, gestionar bases de datos 
+               y crear soluciones innovadoras para la industria.</p>
+            <a href="inscripcion.html" class="btn-enviar">Inscribete ahora</a>
+        </div>
+        <div class="carrera-banner-img">
+            <!-- ESPACIO PARA IMAGEN: Agrega tu imagen aqui, cualquier tamaño funciona -->
+            <img src="img/img.jpg" alt="Estudiantes de sistemas computacionales">
+        </div>
+    </section>
+
+    <!-- Informacion general -->
+    <section class="carrera-info">
+        <div class="carrera-datos">
+            <div class="dato-item">
+                <span class="dato-numero">9</span>
+                <p>Semestres</p>
+            </div>
+            <div class="dato-item">
+                <span class="dato-numero">48</span>
+                <p>Materias</p>
+            </div>
+            <div class="dato-item">
+                <span class="dato-numero">95%</span>
+                <p>Empleabilidad</p>
+            </div>
+            <div class="dato-item">
+                <span class="dato-numero">RVOE</span>
+                <p>Acreditada</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Perfil del egresado -->
+    <section class="carrera-seccion">
+        <div class="carrera-seccion-texto">
+            <h2>Perfil del Egresado</h2>
+            <p>El egresado de Ingenieria en Sistemas Computacionales sera capaz de:</p>
+            <ul class="perfil-lista">
+                <li>Diseñar, desarrollar e implementar sistemas de software utilizando metodologias actuales de ingenieria.</li>
+                <li>Administrar proyectos de tecnologias de la informacion, optimizando recursos y tiempos de entrega.</li>
+                <li>Crear y gestionar bases de datos relacionales y no relacionales para sistemas empresariales.</li>
+                <li>Implementar soluciones de redes y seguridad informatica en organizaciones de cualquier tamaño.</li>
+                <li>Aplicar inteligencia artificial y analisis de datos para resolver problemas del mundo real.</li>
+                <li>Emprender proyectos tecnologicos con vision de negocio y responsabilidad social.</li>
+            </ul>
+        </div>
+        <div class="carrera-seccion-img">
+            <!-- ESPACIO PARA IMAGEN: Agrega tu imagen aqui -->
+            <img src="img/brooke-cagle-g1Kr4Ozfoac-unsplash.jpg" alt="Perfil del egresado">
+        </div>
+    </section>
+
+    <!-- Plan de estudios con tabs -->
+    <section class="plan-estudios">
+        <h2>Plan de Estudios</h2>
+        <p class="plan-descripcion">Nuestro plan de estudios esta diseñado para brindarte las competencias 
+           que la industria tecnologica demanda, combinando teoria solida con practica intensiva.</p>
+        
+        <div id="tabsSistemas" class="plan-tabs">
+            <button class="tab-btn activo" onclick="cambiarTabSistemas('tab1')">1° - 3° Semestre</button>
+            <button class="tab-btn" onclick="cambiarTabSistemas('tab2')">4° - 6° Semestre</button>
+            <button class="tab-btn" onclick="cambiarTabSistemas('tab3')">7° - 9° Semestre</button>
+        </div>
+
+        <div id="tab1" class="tab-panel" style="display:block;">
+            <h3>Formacion Basica</h3>
+            <div class="materias-grid">
+                <div class="materia-item">Calculo Diferencial</div>
+                <div class="materia-item">Fundamentos de Programacion</div>
+                <div class="materia-item">Matematicas Discretas</div>
+                <div class="materia-item">Quimica</div>
+                <div class="materia-item">Calculo Integral</div>
+                <div class="materia-item">Programacion Orientada a Objetos</div>
+                <div class="materia-item">Contabilidad Financiera</div>
+                <div class="materia-item">Algebra Lineal</div>
+                <div class="materia-item">Estructura de Datos</div>
+                <div class="materia-item">Calculo Vectorial</div>
+                <div class="materia-item">Fisica General</div>
+                <div class="materia-item">Cultura Empresarial</div>
+            </div>
+        </div>
+
+        <div id="tab2" class="tab-panel" style="display:none;">
+            <h3>Formacion Intermedia</h3>
+            <div class="materias-grid">
+                <div class="materia-item">Topicos Avanzados de Programacion</div>
+                <div class="materia-item">Sistemas Operativos</div>
+                <div class="materia-item">Bases de Datos</div>
+                <div class="materia-item">Redes de Computadoras</div>
+                <div class="materia-item">Ingenieria de Software</div>
+                <div class="materia-item">Graficacion</div>
+                <div class="materia-item">Bases de Datos Avanzadas</div>
+                <div class="materia-item">Arquitectura de Computadoras</div>
+                <div class="materia-item">Lenguajes y Automatas</div>
+                <div class="materia-item">Simulacion</div>
+                <div class="materia-item">Desarrollo Web</div>
+                <div class="materia-item">Probabilidad y Estadistica</div>
+            </div>
+        </div>
+
+        <div id="tab3" class="tab-panel" style="display:none;">
+            <h3>Formacion Avanzada y Especialidad</h3>
+            <div class="materias-grid">
+                <div class="materia-item">Inteligencia Artificial</div>
+                <div class="materia-item">Seguridad Informatica</div>
+                <div class="materia-item">Programacion Movil</div>
+                <div class="materia-item">Administracion de Proyectos</div>
+                <div class="materia-item">Internet de las Cosas</div>
+                <div class="materia-item">Mineria de Datos</div>
+                <div class="materia-item">Cloud Computing</div>
+                <div class="materia-item">Residencia Profesional</div>
+                <div class="materia-item">Gestion de Calidad de Software</div>
+                <div class="materia-item">Emprendimiento Tecnologico</div>
+                <div class="materia-item">Proyecto Integrador</div>
+                <div class="materia-item">Servicio Social</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Galeria de imagenes del area -->
+    <section class="carrera-galeria">
+        <h2>Nuestras Instalaciones de Computo</h2>
+        <div class="galeria-carrera-grid">
+            <!-- ESPACIO PARA IMAGEN 1 -->
+            <div class="galeria-carrera-item">
+                <img src="img/naassom-azevedo-Q_Sei-TqSlc-unsplash.jpg" alt="Laboratorio de computo">
+                <div class="galeria-carrera-caption">Laboratorio de Programacion</div>
+            </div>
+            <!-- ESPACIO PARA IMAGEN 2 -->
+            <div class="galeria-carrera-item">
+                <img src="img/brooke-cagle-g1Kr4Ozfoac-unsplash.jpg" alt="Sala de servidores">
+                <div class="galeria-carrera-caption">Centro de Redes</div>
+            </div>
+            <!-- ESPACIO PARA IMAGEN 3 -->
+            <div class="galeria-carrera-item">
+                <img src="img/img.jpg" alt="Aula de clases">
+                <div class="galeria-carrera-caption">Aulas Inteligentes</div>
+            </div>
+            <!-- ESPACIO PARA IMAGEN 4 -->
+            <div class="galeria-carrera-item">
+                <img src="img/naassom-azevedo-Q_Sei-TqSlc-unsplash.jpg" alt="Hackathon">
+                <div class="galeria-carrera-caption">Eventos y Hackathons</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Campo laboral -->
+    <section class="campo-laboral">
+        <h2>Campo Laboral</h2>
+        <p class="campo-descripcion">Los egresados de Ingenieria en Sistemas Computacionales tienen 
+           una alta demanda en el mercado laboral. Estos son algunos de los roles que podras desempeñar:</p>
+        <div class="campo-grid">
+            <div class="campo-item">
+                <h3>Desarrollador de Software</h3>
+                <p>Crea aplicaciones web, moviles y de escritorio para empresas nacionales e internacionales.</p>
+            </div>
+            <div class="campo-item">
+                <h3>Administrador de Bases de Datos</h3>
+                <p>Gestiona y optimiza sistemas de informacion criticos para la operacion empresarial.</p>
+            </div>
+            <div class="campo-item">
+                <h3>Ingeniero de Redes</h3>
+                <p>Diseña e implementa infraestructura de red y soluciones de conectividad.</p>
+            </div>
+            <div class="campo-item">
+                <h3>Analista de Ciberseguridad</h3>
+                <p>Protege los activos digitales y la informacion de organizaciones contra amenazas.</p>
+            </div>
+            <div class="campo-item">
+                <h3>Cientifico de Datos</h3>
+                <p>Analiza grandes volumenes de datos para generar insights y apoyar decisiones estrategicas.</p>
+            </div>
+            <div class="campo-item">
+                <h3>Emprendedor Tecnologico</h3>
+                <p>Crea tu propia startup tecnologica con las bases solidas que te brinda la carrera.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Final -->
+    <section class="carrera-cta">
+        <h2>¿Listo para comenzar tu carrera en tecnologia?</h2>
+        <p>Las inscripciones para el semestre 2026-II estan abiertas. Cupos limitados.</p>
+        <div class="cta-botones">
+            <a href="inscripcion.html" class="btn-enviar">Inscribete ahora</a>
+            <a href="contacto.html" class="btn-secundario">Solicitar informacion</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer">
+            <div>
+                <div class="footInfo">
+                    <h4>Aguilar</h4>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. <br> Voluptatem nobis labore quidem, eaque
+                        quas unde maiores.</p>
+                </div>
+            </div>
+            <div class="gridFoot">
+                <div class="footCol">
+                    <h4>INSTITUCION</h4>
+                    <ul>
+                        <li><a href="nosotros.html">Quienes somos</a></li>
+                        <li><a href="nosotros.html">Vision y Mision</a></li>
+                        <li><a href="nosotros.html">Autoridades</a></li>
+                        <li><a href="nosotros.html">Acreditaciones</a></li>
+                    </ul>
+                </div>
+                <div class="footCol">
+                    <h4>ACADEMICO</h4>
+                    <ul>
+                        <li><a href="admisiones.html">Carreras</a></li>
+                        <li><a href="admisiones.html">Posgrado</a></li>
+                        <li><a href="campus.html">Calendario</a></li>
+                        <li><a href="campus.html">Biblioteca</a></li>
+                    </ul>
+                </div>
+                <div class="footCol">
+                    <h4>CONTACTO</h4>
+                    <ul>
+                        <li><a href="admisiones.html">Admisiones</a></li>
+                        <li><a href="contacto.html">Bienestar</a></li>
+                        <li><a href="contacto.html">Ubicacion</a></li>
+                        <li><a href="contacto.html">Trabaja con nosotros</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footfoot">
+            <p>Colegio las Aguilas </p>
+            <p>Diseñado con exelencia</p>
+        </div>
+    </footer>
+
+    <script src="scripts/main.js"></script>
+</body>
+
+</html>

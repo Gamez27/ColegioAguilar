@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Admisiones - Colegio Aguilas">
+    <link rel="icon" href="img/icono.png" type="image/png">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap">
+    <link rel="stylesheet" href="Estilos/styles.css">
+    <title>Admisiones - Colegio Aguilas</title>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <div class="icono">
+                <a href="index.html"><img src="img/icono.png" alt="Logo"></a>
+            </div>
+            <ul class="botonesNav">
+                <a href="nosotros.html">NOSOTROS</a>
+                <a href="admisiones.html">ADMISIONES</a>
+                <a href="campus.html">CAMPUS</a>
+                <a href="inscripcion.html">INSCRIBETE</a>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="pagina-titulo">
+        <span class="nom_seccion">--- OFERTA ACADEMICA</span>
+        <h1>Admisiones y Carreras</h1>
+        <p>Explora nuestras carreras disponibles y encuentra la que mejor se adapte a tu futuro profesional.</p>
+    </section>
+
+    <section class="filtro-seccion">
+        <div class="filtro-controles">
+            <button class="filtro-btn activo" onclick="filtrarCarreras('todas')">Todas</button>
+            <button class="filtro-btn" onclick="filtrarCarreras('ingenieria')">Ingenieria</button>
+            <button class="filtro-btn" onclick="filtrarCarreras('ciencias')">Ciencias</button>
+            <button class="filtro-btn" onclick="filtrarCarreras('humanidades')">Humanidades</button>
+        </div>
+        <div class="buscador">
+            <input type="text" id="buscadorCarreras" placeholder="Buscar carrera..." oninput="buscarCarrera()">
+        </div>
+    </section>
+
+    <section class="carreras-grid" id="carrerasGrid">
+    </section>
+
+    <section class="requisitos-seccion">
+        <h2>Requisitos de Admision</h2>
+        <div class="requisitos-lista">
+            <div class="requisito-item">
+                <div class="requisito-numero">1</div>
+                <div>
+                    <h3>Certificado de Bachillerato</h3>
+                    <p>Original y copia del certificado de estudios de nivel medio superior.</p>
+                </div>
+            </div>
+            <div class="requisito-item">
+                <div class="requisito-numero">2</div>
+                <div>
+                    <h3>Acta de Nacimiento</h3>
+                    <p>Acta de nacimiento original y copia reciente (no mayor a 6 meses).</p>
+                </div>
+            </div>
+            <div class="requisito-item">
+                <div class="requisito-numero">3</div>
+                <div>
+                    <h3>Identificacion Oficial</h3>
+                    <p>INE, pasaporte o credencial de estudiante vigente con fotografia.</p>
+                </div>
+            </div>
+            <div class="requisito-item">
+                <div class="requisito-numero">4</div>
+                <div>
+                    <h3>Fotografias</h3>
+                    <p>4 fotografias tamaño infantil a color con fondo blanco.</p>
+                </div>
+            </div>
+        </div>
+        <div class="requisitos-cta">
+            <a href="inscripcion.html" class="btn-enviar">Iniciar mi inscripcion</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer">
+            <div>
+                <div class="footInfo">
+                    <h4>Aguilar</h4>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. <br> Voluptatem nobis labore quidem, eaque
+                        quas unde maiores.</p>
+                </div>
+            </div>
+            <div class="gridFoot">
+                <div class="footCol">
+                    <h4>INSTITUCION</h4>
+                    <ul>
+                        <li><a href="nosotros.html">Quienes somos</a></li>
+                        <li><a href="nosotros.html">Vision y Mision</a></li>
+                        <li><a href="nosotros.html">Autoridades</a></li>
+                        <li><a href="nosotros.html">Acreditaciones</a></li>
+                    </ul>
+                </div>
+                <div class="footCol">
+                    <h4>ACADEMICO</h4>
+                    <ul>
+                        <li><a href="admisiones.html">Carreras</a></li>
+                        <li><a href="admisiones.html">Posgrado</a></li>
+                        <li><a href="campus.html">Calendario</a></li>
+                        <li><a href="campus.html">Biblioteca</a></li>
+                    </ul>
+                </div>
+                <div class="footCol">
+                    <h4>CONTACTO</h4>
+                    <ul>
+                        <li><a href="admisiones.html">Admisiones</a></li>
+                        <li><a href="contacto.html">Bienestar</a></li>
+                        <li><a href="contacto.html">Ubicacion</a></li>
+                        <li><a href="contacto.html">Trabaja con nosotros</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footfoot">
+            <p>Colegio las Aguilas </p>
+            <p>Diseñado con exelencia</p>
+        </div>
+    </footer>
+
+    <script src="scripts/main.js"></script>
+</body>
+
+</html>

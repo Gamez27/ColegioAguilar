@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Contacto - Colegio Aguilas">
+    <link rel="icon" href="img/icono.png" type="image/png">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap">
+    <link rel="stylesheet" href="Estilos/styles.css">
+    <title>Contacto - Colegio Aguilas</title>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <div class="icono">
+                <a href="index.html"><img src="img/icono.png" alt="Logo"></a>
+            </div>
+            <ul class="botonesNav">
+                <a href="nosotros.html">NOSOTROS</a>
+                <a href="admisiones.html">ADMISIONES</a>
+                <a href="campus.html">CAMPUS</a>
+                <a href="inscripcion.html">INSCRIBETE</a>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="pagina-titulo">
+        <span class="nom_seccion">--- COMUNICATE CON NOSOTROS</span>
+        <h1>Contacto</h1>
+        <p>Estamos aqui para resolver tus dudas. Envianos un mensaje o visitanos en nuestras instalaciones.</p>
+    </section>
+
+    <section class="contacto-contenido">
+        <div class="contacto-info">
+            <h2>Informacion de Contacto</h2>
+            <div class="info-item">
+                <div class="info-icono">📍</div>
+                <div>
+                    <h3>Direccion</h3>
+                    <p>Av. Universidad #1500, Col. Centro, Cd. Mante, Tamaulipas, Mexico.</p>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icono">📞</div>
+                <div>
+                    <h3>Telefono</h3>
+                    <p>(834) 123-4567</p>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icono">✉️</div>
+                <div>
+                    <h3>Correo</h3>
+                    <p>admisiones@colegioaguilas.edu.mx</p>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icono">🕐</div>
+                <div>
+                    <h3>Horario</h3>
+                    <p>Lunes a Viernes: 8:00 - 18:00<br>Sabado: 9:00 - 13:00</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="contacto-form">
+            <h2>Envianos un Mensaje</h2>
+            <form id="formContacto">
+                <div class="form-grupo">
+                    <label for="contactNombre">Nombre completo</label>
+                    <input type="text" id="contactNombre" placeholder="Tu nombre" required>
+                </div>
+                <div class="form-grupo">
+                    <label for="contactEmail">Correo electronico</label>
+                    <input type="email" id="contactEmail" placeholder="Tu correo" required>
+                </div>
+                <div class="form-grupo">
+                    <label for="contactAsunto">Asunto</label>
+                    <select id="contactAsunto" required>
+                        <option value="">Selecciona un asunto</option>
+                        <option value="admisiones">Informacion de admisiones</option>
+                        <option value="academico">Consulta academica</option>
+                        <option value="becas">Becas y financiamiento</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </div>
+                <div class="form-grupo">
+                    <label for="contactMensaje">Mensaje</label>
+                    <textarea id="contactMensaje" rows="5" placeholder="Escribe tu mensaje aqui..." required></textarea>
+                </div>
+                <button type="submit" class="btn-enviar">Enviar Mensaje</button>
+            </form>
+            <div id="contactMensajeExito" class="mensaje-exito" style="display:none;">
+                ¡Mensaje enviado con exito! Te responderemos pronto.
+            </div>
+        </div>
+    </section>
+
+    <section class="faq-seccion">
+        <h2>Preguntas Frecuentes</h2>
+        <div class="faq-lista" id="faqLista">
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer">
+            <div>
+                <div class="footInfo">
+                    <h4>Aguilar</h4>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. <br> Voluptatem nobis labore quidem, eaque
+                        quas unde maiores.</p>
+                </div>
+            </div>
+            <div class="gridFoot">
+                <div class="footCol">
+                    <h4>INSTITUCION</h4>
+                    <ul>
+                        <li><a href="nosotros.html">Quienes somos</a></li>
+                        <li><a href="nosotros.html">Vision y Mision</a></li>
+                        <li><a href="nosotros.html">Autoridades</a></li>
+                        <li><a href="nosotros.html">Acreditaciones</a></li>
+                    </ul>
+                </div>
+                <div class="footCol">
+                    <h4>ACADEMICO</h4>
+                    <ul>
+                        <li><a href="admisiones.html">Carreras</a></li>
+                        <li><a href="admisiones.html">Posgrado</a></li>
+                        <li><a href="campus.html">Calendario</a></li>
+                        <li><a href="campus.html">Biblioteca</a></li>
+                    </ul>
+                </div>
+                <div class="footCol">
+                    <h4>CONTACTO</h4>
+                    <ul>
+                        <li><a href="admisiones.html">Admisiones</a></li>
+                        <li><a href="contacto.html">Bienestar</a></li>
+                        <li><a href="contacto.html">Ubicacion</a></li>
+                        <li><a href="contacto.html">Trabaja con nosotros</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footfoot">
+            <p>Colegio las Aguilas </p>
+            <p>Diseñado con exelencia</p>
+        </div>
+    </footer>
+
+    <script src="scripts/main.js"></script>
+</body>
+
+</html>

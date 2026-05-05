@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Campus - Colegio Aguilas">
+    <link rel="icon" href="img/icono.png" type="image/png">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap">
+    <link rel="stylesheet" href="Estilos/styles.css">
+    <title>Campus - Colegio Aguilas</title>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <div class="icono">
+                <a href="index.html"><img src="img/icono.png" alt="Logo"></a>
+            </div>
+            <ul class="botonesNav">
+                <a href="nosotros.html">NOSOTROS</a>
+                <a href="admisiones.html">ADMISIONES</a>
+                <a href="campus.html">CAMPUS</a>
+                <a href="inscripcion.html">INSCRIBETE</a>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="pagina-titulo">
+        <span class="nom_seccion">--- NUESTRAS INSTALACIONES</span>
+        <h1>Campus Universitario</h1>
+        <p>Descubre nuestras modernas instalaciones diseñadas para potenciar tu aprendizaje.</p>
+    </section>
+
+    <section class="galeria-seccion">
+        <h2>Instalaciones</h2>
+        <div class="galeria-tabs">
+            <button class="tab-btn activo" onclick="cambiarTab('todos')">Todos</button>
+            <button class="tab-btn" onclick="cambiarTab('academico')">Academico</button>
+            <button class="tab-btn" onclick="cambiarTab('deportivo')">Deportivo</button>
+            <button class="tab-btn" onclick="cambiarTab('servicios')">Servicios</button>
+        </div>
+        <div class="galeria-grid" id="galeriaGrid">
+        </div>
+    </section>
+
+    <section class="horario-seccion">
+        <h2>Horarios de Atencion</h2>
+        <div class="horario-container">
+            <table class="horario-tabla">
+                <thead>
+                    <tr>
+                        <th>Servicio</th>
+                        <th>Lunes - Viernes</th>
+                        <th>Sabado</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="horarioTabla">
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="eventos-seccion">
+        <h2>Proximos Eventos</h2>
+        <div class="eventos-grid" id="eventosGrid">
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer">
+            <div>
+                <div class="footInfo">
+                    <h4>Aguilar</h4>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. <br> Voluptatem nobis labore quidem, eaque
+                        quas unde maiores.</p>
+                </div>
+            </div>
+            <div class="gridFoot">
+                <div class="footCol">
+                    <h4>INSTITUCION</h4>
+                    <ul>
+                        <li><a href="nosotros.html">Quienes somos</a></li>
+                        <li><a href="nosotros.html">Vision y Mision</a></li>
+                        <li><a href="nosotros.html">Autoridades</a></li>
+                        <li><a href="nosotros.html">Acreditaciones</a></li>
+                    </ul>
+                </div>
+                <div class="footCol">
+                    <h4>ACADEMICO</h4>
+                    <ul>
+                        <li><a href="admisiones.html">Carreras</a></li>
+                        <li><a href="admisiones.html">Posgrado</a></li>
+                        <li><a href="campus.html">Calendario</a></li>
+                        <li><a href="campus.html">Biblioteca</a></li>
+                    </ul>
+                </div>
+                <div class="footCol">
+                    <h4>CONTACTO</h4>
+                    <ul>
+                        <li><a href="admisiones.html">Admisiones</a></li>
+                        <li><a href="contacto.html">Bienestar</a></li>
+                        <li><a href="contacto.html">Ubicacion</a></li>
+                        <li><a href="contacto.html">Trabaja con nosotros</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footfoot">
+            <p>Colegio las Aguilas </p>
+            <p>Diseñado con exelencia</p>
+        </div>
+    </footer>
+
+    <script src="scripts/main.js"></script>
+</body>
+
+</html>
