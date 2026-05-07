@@ -757,153 +757,553 @@ table tbody tr:hover {
     padding-top: 1rem;
 }
 
-* Responsive adjustments */
+/* ================================================
+   RESPONSIVIDAD COMPLETA
+   ================================================ */
+
 * {
     box-sizing: border-box;
 }
 
-header nav {
-    padding: 0 1.5rem;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-ul {
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.pagina-titulo,
-.formulario-seccion,
-footer {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
-}
-
-.pagina-titulo {
-    padding: 60px 1.5rem 40px;
-}
-
-.pagina-titulo h1 {
-    text-align: center;
-}
-
-.pagina-titulo p {
-    margin: 0 auto;
-    max-width: 100%;
-    text-align: center;
-}
-
-.formulario-seccion {
-    padding: 40px 0 60px;
-    grid-template-columns: 1fr;
-    gap: 30px;
-}
-
-.btn-enviar {
-    width: 100%;
-    text-align: center;
-}
-
-.tabla-container {
+/* Tabla siempre scrolleable en horizontal */
+.tabla-container,
+.horario-container {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
-footer {
-    padding: 40px 1.5rem 24px;
-}
-
-.footer {
+/* ---- Botón Hamburguesa (oculto en desktop) ---- */
+.nav-hamburguesa {
+    display: none;
     flex-direction: column;
-    gap: 2rem;
+    justify-content: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    z-index: 200;
 }
 
-.gridFoot {
-    grid-template-columns: 1fr;
-    padding-bottom: 24px;
-    margin-bottom: 24px;
+.nav-hamburguesa span {
+    display: block;
+    width: 26px;
+    height: 2px;
+    background-color: var(--primario);
+    border-radius: 2px;
+    transition: transform 0.3s, opacity 0.3s;
 }
 
-.footfoot {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: .5rem;
+/* Animación X cuando está abierto */
+.nav-hamburguesa.abierto span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+.nav-hamburguesa.abierto span:nth-child(2) {
+    opacity: 0;
+}
+.nav-hamburguesa.abierto span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
 }
 
-@media (max-width: 900px) {
-    nav {
-        justify-content: center;
+/* ================================================
+   BREAKPOINT: ≤ 1100px  (tablets grandes / laptops pequeñas)
+   ================================================ */
+@media (max-width: 1100px) {
+    /* Inicio: apilar columnas */
+    .inicio {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+    }
+
+    .Cu1 {
+        padding: 60px 40px 40px;
+    }
+
+    .frase_Inicio {
+        font-size: clamp(2.4rem, 6vw, 50px);
+    }
+
+    .Cu2 {
+        height: 320px;
+    }
+
+    .Cu3 {
+        padding: 60px 40px;
+    }
+
+    /* Secciones con padding lateral grande */
+    .inscripcion,
+    .nosotros-contenido,
+    .mision-vision,
+    .contador-seccion,
+    .filtro-seccion,
+    .carreras-grid,
+    .requisitos-seccion,
+    .galeria-seccion,
+    .horario-seccion,
+    .eventos-seccion,
+    .contacto-contenido,
+    .faq-seccion,
+    .carrera-info,
+    .carrera-seccion,
+    .plan-estudios,
+    .carrera-galeria,
+    .campo-laboral,
+    .carrera-cta {
+        padding-left: 40px;
+        padding-right: 40px;
     }
 
     .pagina-titulo {
-        padding: 50px 1.2rem 30px;
+        padding: 70px 40px 50px;
     }
 
-    .formulario-seccion {
-        padding: 30px 0 40px;
+    footer {
+        padding: 50px 40px 28px;
     }
 
-    .form-grupo input,
-    .form-grupo select,
-    .form-grupo textarea,
-    .btn-enviar {
-        font-size: .95rem;
+    /* Admisiones: 2 columnas en lugar de 3 */
+    .carreras-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Materias: 2 columnas */
+    .materias-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Campo laboral: 2 columnas */
+    .campo-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Eventos: 2 columnas */
+    .eventos-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Carrera datos: 2 columnas */
+    .carrera-datos {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Contador: 2 columnas */
+    .contador-seccion {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Footer columnas */
+    .gridFoot {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* CTA botones */
+    .cta-botones {
+        flex-wrap: wrap;
     }
 }
 
-@media (max-width: 640px) {
-    nav {
-        flex-direction: column;
-        align-items: stretch;
-    }
+/* ================================================
+   BREAKPOINT: ≤ 768px  (tablets / móviles grandes)
+   ================================================ */
+@media (max-width: 768px) {
 
-    .icono,
-    .botonesNav {
-        width: 100%;
+    /* --- NAVEGACIÓN HAMBURGUESA --- */
+    .nav-hamburguesa {
         display: flex;
-        justify-content: center;
+    }
+
+    nav {
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 1.2rem;
+        position: relative;
     }
 
     .botonesNav {
-        flex-wrap: wrap;
-        gap: .8rem;
-        padding: 0;
-        margin: 0;
+        display: none;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: var(--fondo-base);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        padding: 1rem 1.2rem;
+        z-index: 150;
+    }
+
+    .botonesNav.abierto {
+        display: flex;
     }
 
     .botonesNav a {
-        padding: .6rem 1rem;
-        background: rgba(34, 13, 42, 0.05);
-        border-radius: 8px;
+        display: block;
+        width: 100%;
+        padding: .75rem 1rem;
+        border-bottom: 1px solid rgba(34,13,42,0.08);
+        font-size: 1rem;
     }
 
-    .pagina-titulo h1 {
-        font-size: 2.4rem;
+    .botonesNav a:last-child {
+        border-bottom: none;
     }
 
-    .pagina-titulo p,
-    .tabla-info,
-    .footInfo p,
-    .footCol {
-        font-size: .95rem;
+    /* --- INDEX --- */
+    .inicio {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
     }
 
-    .form-container,
-    .tabla-container,
-    .sin-datos,
-    .tabla-resumen {
+    .Cu1 {
+        padding: 50px 24px 36px;
+        order: 1;
+    }
+
+    .frase_Inicio {
+        font-size: clamp(2rem, 8vw, 3rem);
+    }
+
+    .inicio_banner {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .inicio-mas {
+        text-align: center;
+    }
+
+    .Cu2 {
+        height: 260px;
+        order: 2;
+    }
+
+    .Cu3 {
+        padding: 40px 24px;
+        order: 3;
+    }
+
+    .Cu4 {
+        order: 4;
+    }
+
+    .card li {
+        padding: 18px 30px;
+    }
+
+    /* Proceso admisión: 1 col */
+    .cards_post {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .inscripcion {
+        padding: 50px 24px;
+    }
+
+    .esp {
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 30px;
+    }
+
+    /* --- PAGINA TITULO --- */
+    .pagina-titulo {
+        padding: 60px 24px 40px;
+        text-align: center;
+    }
+
+    .pagina-titulo p {
+        margin: 0 auto;
+    }
+
+    /* --- NOSOTROS --- */
+    .nosotros-contenido {
+        padding: 40px 24px;
+    }
+
+    .nosotros-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .nosotros-imagen img {
+        height: 280px;
+    }
+
+    .mision-vision {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 40px 24px;
+    }
+
+    .contador-seccion {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 40px 24px;
+        gap: 10px;
+    }
+
+    /* --- ADMISIONES --- */
+    .filtro-seccion {
+        padding: 24px 24px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .filtro-controles {
+        flex-wrap: wrap;
+    }
+
+    .buscador input {
         width: 100%;
     }
 
-    table th,
-    table td {
-        padding: 10px 12px;
+    .carreras-grid {
+        grid-template-columns: 1fr;
+        padding: 20px 24px 40px;
+    }
+
+    .requisitos-seccion {
+        padding: 40px 24px;
+    }
+
+    .requisitos-lista {
+        grid-template-columns: 1fr;
+    }
+
+    /* --- CAMPUS --- */
+    .galeria-seccion {
+        padding: 40px 24px;
+    }
+
+    .galeria-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .galeria-tabs {
+        flex-wrap: wrap;
+    }
+
+    .horario-seccion {
+        padding: 40px 24px;
+    }
+
+    .eventos-seccion {
+        padding: 40px 24px;
+    }
+
+    .eventos-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    /* --- INSCRIPCION --- */
+    .formulario-seccion {
+        padding: 40px 24px 50px;
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .btn-enviar {
+        width: 100%;
+        text-align: center;
+    }
+
+    /* --- CONTACTO --- */
+    .contacto-contenido {
+        padding: 40px 24px;
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .faq-seccion {
+        padding: 40px 24px;
+    }
+
+    /* --- SISTEMAS / CARRERA --- */
+    .carrera-banner {
+        grid-template-columns: 1fr;
+    }
+
+    .carrera-banner-img {
+        height: 280px;
+    }
+
+    .carrera-banner-contenido {
+        padding: 40px 24px;
+    }
+
+    .carrera-info {
+        padding: 30px 24px;
+    }
+
+    .carrera-datos {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .carrera-seccion {
+        grid-template-columns: 1fr;
+        padding: 40px 24px;
+        gap: 24px;
+    }
+
+    .plan-estudios {
+        padding: 40px 24px;
+    }
+
+    .plan-tabs {
+        flex-wrap: wrap;
+    }
+
+    .materias-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .carrera-galeria {
+        padding: 40px 24px;
+    }
+
+    .galeria-carrera-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .campo-laboral {
+        padding: 40px 24px;
+    }
+
+    .campo-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .carrera-cta {
+        padding: 40px 24px;
+    }
+
+    .cta-botones {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* --- FOOTER --- */
+    footer {
+        padding: 40px 24px 24px;
     }
 
     .footer {
-        padding: 0;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .gridFoot {
+        grid-template-columns: repeat(2, 1fr);
+        margin-bottom: 24px;
+        padding-bottom: 24px;
+    }
+
+    .footfoot {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: .4rem;
     }
 }
+
+/* ================================================
+   BREAKPOINT: ≤ 480px  (móviles pequeños)
+   ================================================ */
+@media (max-width: 480px) {
+
+    .frase_Inicio {
+        font-size: clamp(1.8rem, 9vw, 2.4rem);
+    }
+
+    .Cu2 {
+        height: 200px;
+    }
+
+    /* Grid de Cards: 1 columna */
+    .cards_post {
+        grid-template-columns: 1fr;
+    }
+
+    .galeria-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .eventos-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .contador-seccion {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0;
+    }
+
+    .contador-item {
+        padding: 20px 10px;
+    }
+
+    .contador-numero {
+        font-size: 2.2rem;
+    }
+
+    /* Materias: 1 col */
+    .materias-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Campo laboral: 1 col */
+    .campo-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Carrera datos: 2 col */
+    .carrera-datos {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Footer columnas: 1 */
+    .gridFoot {
+        grid-template-columns: 1fr;
+    }
+
+    /* Tabla: texto más pequeño */
+    table th,
+    table td {
+        padding: 8px 10px;
+        font-size: .82rem;
+    }
+
+    .pagina-titulo h1 {
+        font-size: 2rem;
+    }
+
+    h2 {
+        font-size: clamp(1.6rem, 5vw, 2.2rem);
+    }
+
+    .mv-card {
+        padding: 28px 20px;
+    }
+
+    .filtro-btn,
+    .tab-btn {
+        padding: 8px 16px;
+        font-size: .85rem;
+    }
+
+    .carrera-banner-contenido {
+        padding: 30px 18px;
+    }
+
+    .btn-secundario {
+        width: 100%;
+        text-align: center;
+    }
+}
+
 
 /* 
    CAMPUS

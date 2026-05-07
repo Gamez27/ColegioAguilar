@@ -1,3 +1,38 @@
+// ============================================================
+//  MENÚ HAMBURGUESA (aplica en todas las páginas)
+// ============================================================
+(function () {
+    var btn = document.getElementById('navHamburguesa');
+    var menu = document.getElementById('botonesNav');
+
+    if (!btn || !menu) return;
+
+    btn.addEventListener('click', function () {
+        var abierto = menu.classList.toggle('abierto');
+        btn.classList.toggle('abierto', abierto);
+        btn.setAttribute('aria-expanded', abierto ? 'true' : 'false');
+    });
+
+    // Cerrar al hacer clic en cualquier enlace del menú
+    var enlaces = menu.querySelectorAll('a');
+    for (var i = 0; i < enlaces.length; i++) {
+        enlaces[i].addEventListener('click', function () {
+            menu.classList.remove('abierto');
+            btn.classList.remove('abierto');
+            btn.setAttribute('aria-expanded', 'false');
+        });
+    }
+
+    // Cerrar al hacer clic fuera
+    document.addEventListener('click', function (e) {
+        if (!btn.contains(e.target) && !menu.contains(e.target)) {
+            menu.classList.remove('abierto');
+            btn.classList.remove('abierto');
+            btn.setAttribute('aria-expanded', 'false');
+        }
+    });
+})();
+
 //  INSCRIPCION 
 var formulario = document.getElementById('formInscripcion');
 
@@ -181,7 +216,7 @@ if (carrerasGrid) {
                 '<div class="carrera-categoria">' + listaCarreras[i].categoria.toUpperCase() + '</div>' +
                 '<h3>' + listaCarreras[i].nombre + '</h3>' +
                 '<p>' + listaCarreras[i].descripcion + '</p>' +
-                '<div class="carrera-duracion">Duracion: ' + listaCarreras[i].duracion + '</div>' + 
+                '<div class="carrera-duracion">Duracion: ' + listaCarreras[i].duracion + '</div>' +
                 enlaceHtml;
             grid.appendChild(card);
         }
