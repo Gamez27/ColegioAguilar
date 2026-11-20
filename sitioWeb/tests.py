@@ -1,7 +1,8 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User
-from .models import Aspirante, MensajeContacto
+from django.core import mail
+from .models import Aspirante, MensajeContacto, ConfiguracionSitio
 
 class AdministracionCRUDTests(TestCase):
     def setUp(self):
@@ -143,3 +144,160 @@ class AdministracionCRUDTests(TestCase):
         response = self.client.get(reverse('admin_logout'))
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('admin_login'))
+
+    def test_limite_5_personas_envia_correo_y_bloquea_inscripciones(self):
+        """
+        Verifica que al registrar a la 5ta persona:
+        1. Se envíe un correo de notificación a gamezur27@gmail.com
+        2. El apartado de inscripciones se bloquee para personas adicionales
+        3. Intentos posteriores de inscripción sean rechazados
+        """
+        config = ConfiguracionSitio.get_solo()
+        config.limite_inscripciones = 5
+        config.email_notificaciones = 'gamezur27@gmail.com'
+        config.inscripciones_activas = True
+        config.limite_notificado = False
+        config.save()
+
+        # Ya hay 1 en setUp (Carlos Mendoza). Creamos 3 más para tener 4
+        for i in range(2, 5):
+            Aspirante.objects.create(
+                nombre=f'Aspirante {i}',
+                email=f'aspirante{i}@ejemplo.com',
+                telefono=f'834111222{i}',
+                carrera='Medicina',
+                promedio=9.0
+            )
+
+        self.assertEqual(Aspirante.objects.count(), 4)
+        mail.outbox = []
+
+        # El 5to aspirante se registra por la página pública
+        response = self.client.post(reverse('inscripcion'), {
+            'nombre': 'Quinto Aspirante',
+            'email': 'quinto@ejemplo.com',
+            'telefono': '8345559999',
+            'carrera': 'Derecho',
+            'promedio': '9.5',
+        }, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Aspirante.objects.count(), 5)
+
+        # 1. Verificar que se envió el correo a gamezur27@gmail.com
+        self.assertEqual(len(mail.outbox), 1)
+        email_enviado = mail.outbox[0]
+        self.assertIn('gamezur27@gmail.com', email_enviado.to)
+        self.assertIn('Límite de Inscripciones Alcanzado', email_enviado.subject)
+        self.assertIn('5/5', email_enviado.subject)
+        self.assertIn('Quinto Aspirante', email_enviado.body)
+
+        # 2. Verificar que el flag de límite notificado está activo
+        config.refresh_from_db()
+        self.assertTrue(config.limite_notificado)
+
+        # 3. Verificar que la página de inscripciones pública ahora muestra el bloqueo
+        response_get = self.client.get(reverse('inscripcion'))
+        self.assertEqual(response_get.status_code, 200)
+        self.assertContains(response_get, 'Apartado de Inscripciones Bloqueado')
+        self.assertContains(response_get, 'Inscripciones Cerradas')
+
+        # 4. Verificar que un 6to aspirante es RECHAZADO y bloqueado
+        response_sexto = self.client.post(reverse('inscripcion'), {
+            'nombre': 'Sexto Aspirante',
+            'email': 'sexto@ejemplo.com',
+            'telefono': '8349991111',
+            'carrera': 'Arquitectura',
+            'promedio': '8.8',
+        }, follow=True)
+
+        self.assertEqual(response_sexto.status_code, 200)
+        self.assertContains(response_sexto, 'El período de inscripciones se encuentra cerrado')
+        self.assertEqual(Aspirante.objects.count(), 5)  # No aumentó a 6
+
+    def test_admin_controla_limite_desde_panel(self):
+        """
+        Verifica que desde el panel de admin se pueda cambiar el límite de cupos,
+        lo cual reabre las inscripciones y permite nuevos registros.
+        """
+        self.client.login(username=self.username, password=self.password)
+        config = ConfiguracionSitio.get_solo()
+        config.limite_inscripciones = 5
+        config.save()
+
+        # Llenar a 5 registros
+        for i in range(2, 6):
+            Aspirante.objects.create(
+                nombre=f'Aspirante {i}',
+                email=f'aspirante{i}@ejemplo.com',
+                telefono=f'834111222{i}',
+                carrera='Medicina',
+                promedio=9.0
+            )
+        self.assertEqual(Aspirante.objects.count(), 5)
+
+        # Modificar límite desde el admin a 8
+        response_cfg = self.client.post(reverse('configuracion_actualizar'), {
+            'limite_inscripciones': 8,
+            'email_notificaciones': 'gamezur27@gmail.com',
+            'inscripciones_activas': True,
+        }, follow=True)
+
+        self.assertEqual(response_cfg.status_code, 200)
+        config.refresh_from_db()
+        self.assertEqual(config.limite_inscripciones, 8)
+        self.assertFalse(config.limite_notificado)
+
+        # Ahora el 6to aspirante ya PUEDE registrarse porque el límite subió a 8
+        self.client.logout()
+        response_nuevo = self.client.post(reverse('inscripcion'), {
+            'nombre': 'Sexto Aspirante',
+            'email': 'sexto@ejemplo.com',
+            'telefono': '8349991111',
+            'carrera': 'Arquitectura',
+            'promedio': '8.8',
+        }, follow=True)
+
+        self.assertEqual(response_nuevo.status_code, 200)
+        self.assertEqual(Aspirante.objects.count(), 6)
+        self.assertTrue(Aspirante.objects.filter(email='sexto@ejemplo.com').exists())
+
+    def test_eliminar_aspirante_restablece_cupo(self):
+        """
+        Verifica que al eliminar un aspirante cuando se había alcanzado el límite,
+        el cupo se libera y se pueden volver a recibir inscripciones.
+        """
+        config = ConfiguracionSitio.get_solo()
+        config.limite_inscripciones = 2
+        config.limite_notificado = True
+        config.save()
+
+        segundo = Aspirante.objects.create(
+            nombre='Segundo Aspirante',
+            email='segundo@ejemplo.com',
+            telefono='8347778888',
+            carrera='Derecho',
+            promedio=8.5
+        )
+        self.assertEqual(Aspirante.objects.count(), 2)
+
+        # El admin elimina al segundo aspirante
+        self.client.login(username=self.username, password=self.password)
+        self.client.post(reverse('aspirante_eliminar', kwargs={'id': segundo.id}))
+
+        config.refresh_from_db()
+        self.assertEqual(Aspirante.objects.count(), 1)
+        self.assertFalse(config.limite_notificado)
+
+        # Ahora se puede registrar uno nuevo
+        self.client.logout()
+        response = self.client.post(reverse('inscripcion'), {
+            'nombre': 'Nuevo Reemplazo',
+            'email': 'reemplazo@ejemplo.com',
+            'telefono': '8346665555',
+            'carrera': 'Medicina',
+            'promedio': '9.1',
+        }, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Aspirante.objects.count(), 2)
+

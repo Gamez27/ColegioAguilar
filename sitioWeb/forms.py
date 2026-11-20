@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
-from .models import Aspirante, MensajeContacto, Alumno
+from .models import Aspirante, MensajeContacto, Alumno, ConfiguracionSitio
 
 class AdminLoginForm(AuthenticationForm):
     username = forms.CharField(
@@ -132,3 +132,31 @@ class MensajeContactoForm(forms.ModelForm):
         if len(nombre) < 2:
             raise forms.ValidationError('Por favor ingresa un nombre válido.')
         return nombre
+
+
+class ConfiguracionSitioForm(forms.ModelForm):
+    class Meta:
+        model = ConfiguracionSitio
+        fields = ['limite_inscripciones', 'email_notificaciones', 'inscripciones_activas']
+        widgets = {
+            'limite_inscripciones': forms.NumberInput(attrs={
+                'class': 'form-input',
+                'min': '1',
+                'max': '1000',
+                'required': True,
+            }),
+            'email_notificaciones': forms.EmailInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'correo@ejemplo.com',
+                'required': True,
+            }),
+            'inscripciones_activas': forms.CheckboxInput(attrs={
+                'style': 'width: 20px; height: 20px; cursor: pointer; accent-color: #220d2a;',
+            }),
+        }
+
+    def clean_limite_inscripciones(self):
+        limite = self.cleaned_data.get('limite_inscripciones')
+        if limite is None or limite < 1:
+            raise forms.ValidationError('El límite debe ser al menos de 1 persona.')
+        return limite

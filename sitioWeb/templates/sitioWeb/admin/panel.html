@@ -52,13 +52,33 @@
             </div>
         {% endif %}
 
+        {% if inscripciones_bloqueadas %}
+        <!-- Alerta de Límite Alcanzado -->
+        <div style="background: linear-gradient(135deg, #fff5f5, #fde8e8); border-left: 5px solid #c0392b; border-radius: 8px; padding: 16px 20px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(192,57,43,0.1); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div>
+                <div style="font-size: 1.05rem; font-weight: 700; color: #c0392b; display: flex; align-items: center; gap: 8px;">
+                    <span>Límite de Inscripciones Alcanzado ({{ total_aspirantes }}/{{ config.limite_inscripciones }})</span>
+                </div>
+                <p style="margin: 4px 0 0; color: #666; font-size: 0.9rem;">
+                    El formulario público de inscripciones se encuentra <strong>BLOQUEADO</strong>. Las alertas fueron dirigidas a <strong>{{ config.email_notificaciones }}</strong>. Para admitir más registros, aumenta el límite de cupos.
+                </p>
+            </div>
+            <a href="?tab=configuracion" class="btn-action-primary" style="background-color: #c0392b; padding: 8px 16px; font-size: 0.88rem; text-decoration: none;">
+                Modificar Límite
+            </a>
+        </div>
+        {% endif %}
+
         <!-- Tarjetas de Métricas (KPIs) -->
         <section class="metrics-grid">
             <div class="metric-card">
                 <div class="metric-icon purple">🎓</div>
                 <div class="metric-info">
                     <h3>Inscripciones</h3>
-                    <div class="metric-value">{{ total_aspirantes }}</div>
+                    <div class="metric-value">{{ total_aspirantes }} <span style="font-size: 1rem; color: #888; font-weight: normal;">/ {{ config.limite_inscripciones }}</span></div>
+                    <span style="font-size: 0.8rem; font-weight: 600; color: {% if inscripciones_bloqueadas %}#c0392b{% else %}#27ae60{% endif %};">
+                        {% if inscripciones_bloqueadas %}Límite alcanzado{% else %}{{ cupos_disponibles }} lugares libres{% endif %}
+                    </span>
                 </div>
             </div>
 
@@ -67,6 +87,7 @@
                 <div class="metric-info">
                     <h3>Comentarios</h3>
                     <div class="metric-value">{{ total_mensajes }}</div>
+                    <span style="font-size: 0.8rem; color: #777;">Bandeja de contacto</span>
                 </div>
             </div>
 
@@ -75,21 +96,25 @@
                 <div class="metric-info">
                     <h3>Promedio General</h3>
                     <div class="metric-value">{{ promedio_general }}</div>
+                    <span style="font-size: 0.8rem; color: #777;">Promedio de aspirantes</span>
                 </div>
             </div>
 
             <div class="metric-card">
-                <div class="metric-icon blue">⭐</div>
+                <div class="metric-icon blue" style="font-weight: 700; font-size: 0.95rem;">CUPO</div>
                 <div class="metric-info">
-                    <h3>Carrera Top</h3>
-                    <div class="metric-value" style="font-size: 1.15rem; word-break: break-word;">{{ carrera_top }}</div>
+                    <h3>Límite de Cupo</h3>
+                    <div class="metric-value">{{ config.limite_inscripciones }} <span style="font-size: 0.9rem; color: #888; font-weight: normal;">personas</span></div>
+                    <span style="font-size: 0.78rem; color: #666; word-break: break-all;" title="{{ config.email_notificaciones }}">
+                        {{ config.email_notificaciones|truncatechars:26 }}
+                    </span>
                 </div>
             </div>
         </section>
 
         <!-- Pestañas de Navegación -->
         <div class="admin-tabs">
-            <a href="?tab=aspirantes" class="tab-link {% if tab != 'mensajes' %}active{% endif %}">
+            <a href="?tab=aspirantes" class="tab-link {% if tab != 'mensajes' and tab != 'configuracion' %}active{% endif %}">
                 <span>🎓 Inscripciones / Aspirantes</span>
                 <span class="tab-counter">{{ total_aspirantes }}</span>
             </a>
@@ -97,9 +122,17 @@
                 <span>💬 Comentarios y Contacto</span>
                 <span class="tab-counter">{{ total_mensajes }}</span>
             </a>
+            <a href="?tab=configuracion" class="tab-link {% if tab == 'configuracion' %}active{% endif %}">
+                <span>Control de Cupos y Límite</span>
+                {% if inscripciones_bloqueadas %}
+                <span class="tab-counter" style="background-color: #c0392b; color: #fff;">Lleno</span>
+                {% else %}
+                <span class="tab-counter" style="background-color: #27ae60; color: #fff;">{{ config.limite_inscripciones }}</span>
+                {% endif %}
+            </a>
         </div>
 
-        {% if tab != 'mensajes' %}
+        {% if tab != 'mensajes' and tab != 'configuracion' %}
         <!-- ========================================== -->
         <!--  TAB 1: CRUD ASPIRANTES (INSCRIPCIONES)     -->
         <!-- ========================================== -->
@@ -210,7 +243,7 @@
             </div>
         </div>
 
-        {% else %}
+        {% elif tab == 'mensajes' %}
         <!-- ========================================== -->
         <!--  TAB 2: CRUD COMENTARIOS / CONTACTO        -->
         <!-- ========================================== -->
@@ -305,6 +338,129 @@
                         {% endfor %}
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+        {% elif tab == 'configuracion' %}
+        <!-- ========================================== -->
+        <!--  TAB 3: CONFIGURACIÓN DE CUPOS Y LÍMITES   -->
+        <!-- ========================================== -->
+        <div class="table-card" style="max-width: 920px; margin: 0 auto;">
+            <div class="table-header" style="border-bottom: 2px solid #f0e6d6; padding-bottom: 1.2rem;">
+                <div>
+                    <h2>Control de Cupos y Notificaciones</h2>
+                    <p style="margin: 3px 0 0; color: #777; font-size: 0.88rem;">
+                        Configura el límite de personas que pueden registrarse y el correo al que se enviará la notificación automática cuando se alcance el cupo.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Panel Informativo de Estado Actual -->
+            <div style="padding: 1.5rem; background-color: #faf8f5; border-bottom: 1px solid var(--borde);">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                    <div style="background: #fff; padding: 14px; border-radius: 6px; border: 1px solid var(--borde);">
+                        <span style="font-size: 0.78rem; color: #777; text-transform: uppercase; font-weight: 700;">Aspirantes en BD:</span>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--primario); margin-top: 4px;">
+                            {{ total_aspirantes }} <span style="font-size: 0.95rem; color: #888; font-weight: normal;">/ {{ config.limite_inscripciones }}</span>
+                        </div>
+                    </div>
+
+                    <div style="background: #fff; padding: 14px; border-radius: 6px; border: 1px solid var(--borde);">
+                        <span style="font-size: 0.78rem; color: #777; text-transform: uppercase; font-weight: 700;">Lugares Libres:</span>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: {% if cupos_disponibles == 0 %}#c0392b{% else %}#27ae60{% endif %}; margin-top: 4px;">
+                            {{ cupos_disponibles }}
+                        </div>
+                    </div>
+
+                    <div style="background: #fff; padding: 14px; border-radius: 6px; border: 1px solid var(--borde);">
+                        <span style="font-size: 0.78rem; color: #777; text-transform: uppercase; font-weight: 700;">Formulario Web:</span>
+                        <div style="font-size: 1.05rem; font-weight: 700; color: {% if inscripciones_bloqueadas %}#c0392b{% else %}#27ae60{% endif %}; margin-top: 6px;">
+                            {% if inscripciones_bloqueadas %}BLOQUEADO{% else %}ABIERTO{% endif %}
+                        </div>
+                    </div>
+
+                    <div style="background: #fff; padding: 14px; border-radius: 6px; border: 1px solid var(--borde);">
+                        <span style="font-size: 0.78rem; color: #777; text-transform: uppercase; font-weight: 700;">Notificación de Alerta:</span>
+                        <div style="font-size: 0.95rem; font-weight: 600; margin-top: 6px;">
+                            {% if config.limite_notificado %}
+                                <span style="color: #2980b9;">Enviada</span>
+                            {% else %}
+                                <span style="color: #7f8c8d;">Pendiente</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Barra de Progreso de Capacidad -->
+                <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; color: #555; margin-bottom: 6px;">
+                        <span>Capacidad del cupo actual</span>
+                        <span>{{ total_aspirantes }} de {{ config.limite_inscripciones }} ({{ porcentaje_ocupado }}%)</span>
+                    </div>
+                    <div style="width: 100%; height: 12px; background: #e5e7eb; border-radius: 6px; overflow: hidden;">
+                        <div style="height: 100%; width: {{ porcentaje_ocupado }}%; background: {% if inscripciones_bloqueadas %}linear-gradient(90deg, #c0392b, #e74c3c){% else %}linear-gradient(90deg, #27ae60, #2ecc71){% endif %}; border-radius: 6px; transition: width 0.3s ease;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario de Configuración de Límite y Correo -->
+            <form method="POST" action="{% url 'configuracion_actualizar' %}" style="padding: 2rem;">
+                {% csrf_token %}
+                
+                <div class="form-grupo" style="margin-bottom: 1.8rem;">
+                    <label for="id_limite_inscripciones" style="font-weight: 700; color: var(--primario); font-size: 1rem; display: block; margin-bottom: 6px;">
+                        Límite Máximo de Inscripciones (Personas):
+                    </label>
+                    <input type="number" name="limite_inscripciones" id="id_limite_inscripciones" value="{{ config.limite_inscripciones }}" min="1" max="1000" required class="search-input" style="width: 100%; max-width: 250px; font-size: 1.1rem; padding: 10px 14px; font-weight: 700; border: 2px solid var(--borde);">
+                    <p style="margin: 6px 0 0; color: #777; font-size: 0.86rem; line-height: 1.4;">
+                        Al alcanzarse este número de personas registradas (por defecto <strong>5</strong>), el formulario de inscripción de la página pública <strong>se bloqueará automáticamente</strong> y se enviará la notificación por correo.
+                    </p>
+                </div>
+
+                <div class="form-grupo" style="margin-bottom: 1.8rem;">
+                    <label for="id_email_notificaciones" style="font-weight: 700; color: var(--primario); font-size: 1rem; display: block; margin-bottom: 6px;">
+                        Correo Electrónico para Recibir Alertas:
+                    </label>
+                    <input type="email" name="email_notificaciones" id="id_email_notificaciones" value="{{ config.email_notificaciones }}" required class="search-input" style="width: 100%; max-width: 450px; font-size: 1rem; padding: 10px 14px; border: 2px solid var(--borde);">
+                    <p style="margin: 6px 0 0; color: #777; font-size: 0.86rem; line-height: 1.4;">
+                        Dirección donde se recibirá el correo automático cuando se llene el cupo de personas. (Configurado a: <strong>{{ config.email_notificaciones }}</strong>).
+                    </p>
+                </div>
+
+                <div class="form-grupo" style="margin-bottom: 2rem;">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" name="inscripciones_activas" id="id_inscripciones_activas" {% if config.inscripciones_activas %}checked{% endif %} style="width: 22px; height: 22px; cursor: pointer; accent-color: var(--primario);">
+                        <span style="font-weight: 700; color: var(--primario); font-size: 0.98rem;">Habilitar recepción de inscripciones en el sitio web</span>
+                    </label>
+                    <p style="margin: 6px 0 0 32px; color: #777; font-size: 0.86rem;">
+                        Desmarca esta casilla si deseas pausar o cerrar temporalmente las inscripciones sin importar la cantidad de cupos.
+                    </p>
+                </div>
+
+                <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap; padding-top: 1rem; border-top: 1px solid var(--borde);">
+                    <button type="submit" class="btn-action-primary" style="padding: 12px 28px; font-size: 1rem; font-weight: 700;">
+                        Guardar Cambios de Configuración
+                    </button>
+                    <a href="?tab=aspirantes" class="btn-cancel" style="padding: 11px 20px;">
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+
+            <!-- Sección de comprobación / prueba de envío de correo -->
+            <div style="background-color: #fdfaf6; border-top: 1px solid var(--borde); padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <strong style="color: var(--primario); font-size: 0.95rem;">¿Deseas comprobar la notificación por correo?</strong>
+                    <p style="margin: 3px 0 0; color: #666; font-size: 0.85rem;">
+                        Envía un correo de prueba ahora mismo a <strong>{{ config.email_notificaciones }}</strong>.
+                    </p>
+                </div>
+                <form method="POST" action="{% url 'configuracion_probar_correo' %}" style="margin: 0;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-action-secondary" style="padding: 10px 18px; font-size: 0.9rem;">
+                        Enviar Correo de Prueba
+                    </button>
+                </form>
             </div>
         </div>
         {% endif %}

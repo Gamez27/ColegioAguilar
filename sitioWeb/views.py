@@ -7,8 +7,9 @@ from django.db.models import Avg, Count, Q
 from django.http import HttpResponse
 from django.urls import reverse
 
-from .models import Aspirante, MensajeContacto, Alumno
-from .forms import AdminLoginForm, AspiranteForm, MensajeContactoForm
+from .models import Aspirante, MensajeContacto, Alumno, ConfiguracionSitio
+from .forms import AdminLoginForm, AspiranteForm, MensajeContactoForm, ConfiguracionSitioForm
+from .notifications import enviar_notificacion_limite
 
 # ============================================================
 #  VISTAS PÚBLICAS
@@ -43,17 +44,50 @@ def contacto(request):
     return render(request, 'sitioWeb/contacto.html')
 
 def inscripcion(request):
+    config = ConfiguracionSitio.get_solo()
+    total_aspirantes = Aspirante.objects.count()
+    limite = config.limite_inscripciones
+    inscripciones_bloqueadas = (not config.inscripciones_activas) or (total_aspirantes >= limite)
+    cupos_disponibles = max(0, limite - total_aspirantes)
+    porcentaje_ocupado = min(100, int((total_aspirantes / limite) * 100)) if limite > 0 else 100
+
     if request.method == 'POST':
+        if inscripciones_bloqueadas:
+            messages.error(
+                request,
+                f'El período de inscripciones se encuentra cerrado. Se ha alcanzado el límite máximo de {limite} personas permitidas.'
+            )
+            return redirect('inscripcion')
+
         form = AspiranteForm(request.POST)
         if form.is_valid():
-            form.save()
+            aspirante = form.save()
+            nuevo_total = Aspirante.objects.count()
+
+            # Notificar al correo si se alcanzó el límite
+            if nuevo_total >= config.limite_inscripciones and not config.limite_notificado:
+                enviar_notificacion_limite(config, nuevo_total, aspirante)
+                config.limite_notificado = True
+                config.save(update_fields=['limite_notificado'])
+
             messages.success(request, '¡Tu inscripción fue registrada con éxito en el sistema!')
             return redirect('inscripcion')
         else:
             for field, errors in form.errors.items():
                 for error in errors:
                     messages.error(request, f"{error}")
-    return render(request, 'sitioWeb/inscripcion.html')
+    else:
+        form = AspiranteForm()
+
+    return render(request, 'sitioWeb/inscripcion.html', {
+        'form': form,
+        'config': config,
+        'total_aspirantes': total_aspirantes,
+        'limite': limite,
+        'inscripciones_bloqueadas': inscripciones_bloqueadas,
+        'cupos_disponibles': cupos_disponibles,
+        'porcentaje_ocupado': porcentaje_ocupado,
+    })
 
 
 # ============================================================
@@ -146,6 +180,14 @@ def panel_admin(request):
         Aspirante.objects.values_list('carrera', flat=True).distinct()
     )
 
+    # Configuración de límites y cupos del sistema
+    config = ConfiguracionSitio.get_solo()
+    config_form = ConfiguracionSitioForm(instance=config)
+    limite = config.limite_inscripciones
+    inscripciones_bloqueadas = (not config.inscripciones_activas) or (total_aspirantes >= limite)
+    cupos_disponibles = max(0, limite - total_aspirantes)
+    porcentaje_ocupado = min(100, int((total_aspirantes / limite) * 100)) if limite > 0 else 100
+
     context = {
         'tab': tab,
         'aspirantes': aspirantes_qs,
@@ -159,6 +201,12 @@ def panel_admin(request):
         'promedio_general': promedio_general,
         'carrera_top': carrera_top['carrera'] if carrera_top else 'Ninguna',
         'carreras_disponibles': carreras_disponibles,
+        'config': config,
+        'config_form': config_form,
+        'limite': limite,
+        'inscripciones_bloqueadas': inscripciones_bloqueadas,
+        'cupos_disponibles': cupos_disponibles,
+        'porcentaje_ocupado': porcentaje_ocupado,
     }
     return render(request, 'sitioWeb/admin/panel.html', context)
 
@@ -169,10 +217,17 @@ def panel_admin(request):
 
 @login_required(login_url='admin_login')
 def aspirante_crear(request):
+    config = ConfiguracionSitio.get_solo()
     if request.method == 'POST':
         form = AspiranteForm(request.POST)
         if form.is_valid():
             aspirante = form.save()
+            nuevo_total = Aspirante.objects.count()
+            if nuevo_total >= config.limite_inscripciones and not config.limite_notificado:
+                enviar_notificacion_limite(config, nuevo_total, aspirante)
+                config.limite_notificado = True
+                config.save(update_fields=['limite_notificado'])
+
             messages.success(request, f'Aspirante "{aspirante.nombre}" registrado exitosamente en la base de datos.')
             return redirect('panel_admin')
     else:
@@ -209,6 +264,14 @@ def aspirante_eliminar(request, id):
     if request.method == 'POST':
         nombre = aspirante.nombre
         aspirante.delete()
+
+        # Si tras borrar queda por debajo del límite, restablecer límite_notificado para futuras alertas
+        config = ConfiguracionSitio.get_solo()
+        nuevo_total = Aspirante.objects.count()
+        if nuevo_total < config.limite_inscripciones and config.limite_notificado:
+            config.limite_notificado = False
+            config.save(update_fields=['limite_notificado'])
+
         messages.success(request, f'La inscripción de "{nombre}" fue eliminada de la base de datos.')
         return redirect('panel_admin')
 
@@ -281,3 +344,53 @@ def comentario_eliminar(request, id):
         'elemento': f'"{mensaje.asunto}" enviado por {mensaje.nombre}',
         'cancelar_url': f"{reverse('panel_admin')}?tab=mensajes",
     })
+
+
+# ============================================================
+#  CONFIGURACIÓN DE LÍMITES Y NOTIFICACIONES
+# ============================================================
+
+@login_required(login_url='admin_login')
+def configuracion_actualizar(request):
+    config = ConfiguracionSitio.get_solo()
+    if request.method == 'POST':
+        form = ConfiguracionSitioForm(request.POST, instance=config)
+        if form.is_valid():
+            nueva_cfg = form.save(commit=False)
+            total_actual = Aspirante.objects.count()
+
+            # Si el nuevo límite es superior al total de aspirantes registrados,
+            # reactivamos el envío de notificación para cuando se alcance la nueva meta
+            if nueva_cfg.limite_inscripciones > total_actual:
+                nueva_cfg.limite_notificado = False
+
+            nueva_cfg.save()
+            messages.success(
+                request,
+                f'Configuración actualizada exitosamente. Límite: {nueva_cfg.limite_inscripciones} personas. Notificaciones enviadas a: {nueva_cfg.email_notificaciones}.'
+            )
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{error}")
+    return redirect(f"{reverse('panel_admin')}?tab=configuracion")
+
+
+@login_required(login_url='admin_login')
+def configuracion_probar_correo(request):
+    if request.method == 'POST':
+        config = ConfiguracionSitio.get_solo()
+        total_aspirantes = Aspirante.objects.count()
+        ultimo = Aspirante.objects.order_by('-fecha_registro').first()
+        enviado = enviar_notificacion_limite(config, total_aspirantes, ultimo)
+        if enviado:
+            messages.success(
+                request,
+                f'¡Correo de prueba enviado con éxito a {config.email_notificaciones}! Revisa tu bandeja de entrada.'
+            )
+        else:
+            messages.warning(
+                request,
+                f'El correo de prueba fue generado. Si tu servidor no tiene SMTP activo, se imprimió en la consola del servidor.'
+            )
+    return redirect(f"{reverse('panel_admin')}?tab=configuracion")

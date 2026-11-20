@@ -27,4 +27,8 @@ urlpatterns = [
     # CRUD Comentarios / Contacto (MensajeContacto)
     path('admin-panel/mensajes/<int:id>/editar/', views.comentario_editar, name='comentario_editar'),
     path('admin-panel/mensajes/<int:id>/eliminar/', views.comentario_eliminar, name='comentario_eliminar'),
+
+    # Configuración de Límites y Notificaciones
+    path('admin-panel/configuracion/', views.configuracion_actualizar, name='configuracion_actualizar'),
+    path('admin-panel/configuracion/probar-correo/', views.configuracion_probar_correo, name='configuracion_probar_correo'),
 ]

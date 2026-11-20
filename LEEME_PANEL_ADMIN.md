@@ -17,6 +17,8 @@ Este proyecto cuenta con un sistema completo y profesional de **Administración,
 | `/admin-panel/aspirantes/<id>/editar/` | Formulario para editar datos del aspirante | Requiere Login |
 | `/admin-panel/aspirantes/<id>/eliminar/` | Eliminación segura de un aspirante en la BD | Requiere Login |
 | `/admin-panel/aspirantes/exportar-csv/` | Descarga de reporte de aspirantes en Excel/CSV | Requiere Login |
+| `/admin-panel/configuracion/` | Actualizar límite de cupos y correo de alerta | Requiere Login |
+| `/admin-panel/configuracion/probar-correo/` | Enviar correo de prueba para verificar notificaciones | Requiere Login |
 | `/admin-panel/mensajes/<id>/editar/` | Edición de mensaje/comentario de contacto | Requiere Login |
 | `/admin-panel/mensajes/<id>/eliminar/` | Eliminación de mensaje/comentario en la BD | Requiere Login |
 | `/admin-panel/logout/` | Cierre de sesión seguro | Requiere Login |
@@ -70,6 +72,12 @@ El usuario actual registrado en la base de datos es:
   - Filtro por tipo de asunto (admisiones, académico, becas, otro).
   - Modal de lectura rápida para ver el mensaje completo y botón para responder por email directamente con un clic (`mailto:`).
   - Edición y eliminación de comentarios.
+- **Control de Cupos, Bloqueo Automático y Alertas por Correo:**
+  - **Límite configurable:** Desde la pestaña *Control de Cupos y Límite* en el panel administrativo, el administrador puede definir cuántas personas pueden inscribirse (por defecto 5 cupos).
+  - **Bloqueo Automático:** Al registrarse el aspirante que alcanza el cupo límite (por ejemplo, el 5to aspirante), el sistema bloquea inmediatamente la página `/inscripcion/`, impidiendo nuevos registros y mostrando una pantalla explicativa de "Convocatoria Cerrada / Límite Alcanzado" con botón hacia el formulario de contacto.
+  - **Notificación por Correo Electrónico:** En el momento exacto en que se alcanza el límite, se despacha un correo HTML y texto plano a la dirección configurada (`gamezur27@gmail.com`) alertando que los cupos se han llenado, mostrando los datos del último aspirante registrado y proporcionando un botón para acceder al panel.
+  - **Aumento o Reajuste Dinámico de Cupos:** Si el administrador aumenta el límite desde el panel (por ejemplo a 10 o 20) o elimina una inscripción para liberar un lugar, el sistema desbloquea automáticamente el formulario web público y reactiva las notificaciones para cuando se llene el nuevo límite.
+  - **Envío de Correo de Prueba:** Botón integrado en el panel para probar en cualquier momento el despacho de alertas.
 
 ### 3. Integración en el Sitio Web
 - En la barra de navegación superior (Navbar) de todas las páginas:

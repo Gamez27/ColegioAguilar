@@ -38,3 +38,33 @@ class MensajeContacto(models.Model):
 
     def __str__(self):
         return f"{self.nombre} - {self.asunto}"
+
+class ConfiguracionSitio(models.Model):
+    limite_inscripciones = models.PositiveIntegerField(
+        default=5,
+        verbose_name="Límite máximo de inscripciones"
+    )
+    email_notificaciones = models.EmailField(
+        default="gamezur27@gmail.com",
+        verbose_name="Correo para recibir alertas"
+    )
+    inscripciones_activas = models.BooleanField(
+        default=True,
+        verbose_name="Inscripciones activas"
+    )
+    limite_notificado = models.BooleanField(
+        default=False,
+        verbose_name="¿Notificación de límite enviada?"
+    )
+
+    class Meta:
+        verbose_name = "Configuración del Sistema"
+        verbose_name_plural = "Configuraciones del Sistema"
+
+    def __str__(self):
+        return f"Configuración: Límite {self.limite_inscripciones} cupos ({self.email_notificaciones})"
+
+    @classmethod
+    def get_solo(cls):
+        obj, created = cls.objects.get_or_create(id=1)
+        return obj
