@@ -1,0 +1,418 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Colegio Águilas</title>
+    <link rel="icon" href="{% static 'sitioWeb/img/icono.png' %}" type="image/png">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;700&display=swap">
+    <link rel="stylesheet" href="{% static 'sitioWeb/css/admin.css' %}">
+</head>
+<body class="admin-body">
+
+    <!-- Header Superior -->
+    <header class="admin-header">
+        <div class="admin-header-inner">
+            <a href="{% url 'panel_admin' %}" class="admin-brand">
+                <img src="{% static 'sitioWeb/img/icono.png' %}" alt="Logo">
+                <div class="admin-brand-text">
+                    <h1>Colegio Águilas</h1>
+                    <span>Panel de Control Administrativo</span>
+                </div>
+            </a>
+
+            <div class="admin-nav-actions">
+                <div class="admin-user-pill">
+                    <span>👤</span>
+                    <span>Admin: <strong>{{ user.first_name|default:user.username }}</strong></span>
+                </div>
+                <a href="{% url 'inicio' %}" target="_blank" class="btn-admin-nav btn-nav-web">
+                    🌐 Ver Sitio Web
+                </a>
+                <a href="{% url 'admin_logout' %}" class="btn-admin-nav btn-nav-logout">
+                    🚪 Cerrar Sesión
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="admin-container">
+
+        <!-- Mensajes Flash -->
+        {% if messages %}
+            <div class="flash-messages">
+                {% for message in messages %}
+                    <div class="flash-alert {% if message.tags %}{{ message.tags }}{% endif %}">
+                        <span>{{ message }}</span>
+                        <button type="button" class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Tarjetas de Métricas (KPIs) -->
+        <section class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-icon purple">🎓</div>
+                <div class="metric-info">
+                    <h3>Inscripciones</h3>
+                    <div class="metric-value">{{ total_aspirantes }}</div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-icon gold">💬</div>
+                <div class="metric-info">
+                    <h3>Comentarios</h3>
+                    <div class="metric-value">{{ total_mensajes }}</div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-icon green">📊</div>
+                <div class="metric-info">
+                    <h3>Promedio General</h3>
+                    <div class="metric-value">{{ promedio_general }}</div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-icon blue">⭐</div>
+                <div class="metric-info">
+                    <h3>Carrera Top</h3>
+                    <div class="metric-value" style="font-size: 1.15rem; word-break: break-word;">{{ carrera_top }}</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pestañas de Navegación -->
+        <div class="admin-tabs">
+            <a href="?tab=aspirantes" class="tab-link {% if tab != 'mensajes' %}active{% endif %}">
+                <span>🎓 Inscripciones / Aspirantes</span>
+                <span class="tab-counter">{{ total_aspirantes }}</span>
+            </a>
+            <a href="?tab=mensajes" class="tab-link {% if tab == 'mensajes' %}active{% endif %}">
+                <span>💬 Comentarios y Contacto</span>
+                <span class="tab-counter">{{ total_mensajes }}</span>
+            </a>
+        </div>
+
+        {% if tab != 'mensajes' %}
+        <!-- ========================================== -->
+        <!--  TAB 1: CRUD ASPIRANTES (INSCRIPCIONES)     -->
+        <!-- ========================================== -->
+        <div class="table-card">
+            <div class="table-header">
+                <div>
+                    <h2>Aspirantes Registrados</h2>
+                    <p style="margin: 3px 0 0; color: #777; font-size: 0.88rem;">Gestión completa de las solicitudes de inscripción recibidas</p>
+                </div>
+
+                <div class="table-controls">
+                    <!-- Buscador -->
+                    <form method="GET" action="{% url 'panel_admin' %}" class="search-form">
+                        <input type="hidden" name="tab" value="aspirantes">
+                        <input type="text" name="q_asp" value="{{ q_asp }}" placeholder="Buscar por nombre, correo..." class="search-input">
+                        
+                        <!-- Filtro de Carrera -->
+                        <select name="carrera" class="filter-select" onchange="this.form.submit()">
+                            <option value="">Todas las carreras</option>
+                            {% for c in carreras_disponibles %}
+                                <option value="{{ c }}" {% if carrera_filtro == c %}selected{% endif %}>{{ c }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <button type="submit" class="btn-action-primary" style="padding: 9px 12px;">🔍</button>
+                        {% if q_asp or carrera_filtro %}
+                            <a href="{% url 'panel_admin' %}?tab=aspirantes" class="btn-cancel" style="padding: 8px 12px; font-size: 0.85rem;" title="Limpiar filtros">✕</a>
+                        {% endif %}
+                    </form>
+
+                    <!-- Exportar CSV -->
+                    <a href="{% url 'aspirantes_exportar_csv' %}" class="btn-action-secondary" title="Descargar en formato Excel/CSV">
+                        📥 Exportar CSV
+                    </a>
+
+                    <!-- Agregar nuevo -->
+                    <a href="{% url 'aspirante_crear' %}" class="btn-action-primary">
+                        ➕ Nueva Inscripción
+                    </a>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="custom-admin-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">#</th>
+                            <th>Nombre del Aspirante</th>
+                            <th>Correo Electrónico</th>
+                            <th>Teléfono</th>
+                            <th>Carrera</th>
+                            <th>Promedio</th>
+                            <th>Fecha Registro</th>
+                            <th style="text-align: center;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for asp in aspirantes %}
+                        <tr>
+                            <td style="font-weight: 600; color: #888;">{{ asp.id }}</td>
+                            <td><strong>{{ asp.nombre }}</strong></td>
+                            <td>
+                                <a href="mailto:{{ asp.email }}" style="color: var(--primario); text-decoration: none;">
+                                    {{ asp.email }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="tel:{{ asp.telefono }}" style="color: #555; text-decoration: none;">
+                                    {{ asp.telefono }}
+                                </a>
+                            </td>
+                            <td><span style="font-weight: 500;">{{ asp.carrera }}</span></td>
+                            <td>
+                                <span class="badge-promedio {% if asp.promedio >= 9.0 %}alto{% elif asp.promedio >= 8.0 %}medio{% else %}bajo{% endif %}">
+                                    {{ asp.promedio }}
+                                </span>
+                            </td>
+                            <td style="color: #666; font-size: 0.85rem; white-space: nowrap;">
+                                {{ asp.fecha_registro|date:"d/m/Y H:i" }}
+                            </td>
+                            <td style="text-align: center;">
+                                <div class="action-buttons" style="justify-content: center;">
+                                    <a href="{% url 'aspirante_editar' asp.id %}" class="btn-table-edit" title="Editar este aspirante">
+                                        ✏️ Editar
+                                    </a>
+                                    <button type="button" class="btn-table-delete" onclick="confirmarEliminar('aspirante', '{{ asp.id }}', '{{ asp.nombre|escapejs }}', '{% url 'aspirante_eliminar' asp.id %}')" title="Eliminar este aspirante">
+                                        🗑️ Eliminar
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8">
+                                <div class="empty-table-state">
+                                    <div class="icon">📋</div>
+                                    <h3>No se encontraron aspirantes</h3>
+                                    <p>{% if q_asp or carrera_filtro %}Intenta cambiar los términos de búsqueda o filtros.{% else %}Aún no hay inscripciones registradas en la base de datos.{% endif %}</p>
+                                    <div style="margin-top: 1rem;">
+                                        <a href="{% url 'aspirante_crear' %}" class="btn-action-primary">Registrar Primer Aspirante</a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {% else %}
+        <!-- ========================================== -->
+        <!--  TAB 2: CRUD COMENTARIOS / CONTACTO        -->
+        <!-- ========================================== -->
+        <div class="table-card">
+            <div class="table-header">
+                <div>
+                    <h2>Mensajes y Comentarios de Contacto</h2>
+                    <p style="margin: 3px 0 0; color: #777; font-size: 0.88rem;">Mensajes enviados a través del formulario de contacto del sitio web</p>
+                </div>
+
+                <div class="table-controls">
+                    <!-- Buscador -->
+                    <form method="GET" action="{% url 'panel_admin' %}" class="search-form">
+                        <input type="hidden" name="tab" value="mensajes">
+                        <input type="text" name="q_msg" value="{{ q_msg }}" placeholder="Buscar en mensajes..." class="search-input">
+                        
+                        <!-- Filtro de Asunto -->
+                        <select name="asunto" class="filter-select" onchange="this.form.submit()">
+                            <option value="">Todos los asuntos</option>
+                            <option value="admisiones" {% if asunto_filtro == 'admisiones' %}selected{% endif %}>Admisiones</option>
+                            <option value="academico" {% if asunto_filtro == 'academico' %}selected{% endif %}>Académico</option>
+                            <option value="becas" {% if asunto_filtro == 'becas' %}selected{% endif %}>Becas</option>
+                            <option value="otro" {% if asunto_filtro == 'otro' %}selected{% endif %}>Otro</option>
+                        </select>
+
+                        <button type="submit" class="btn-action-primary" style="padding: 9px 12px;">🔍</button>
+                        {% if q_msg or asunto_filtro %}
+                            <a href="{% url 'panel_admin' %}?tab=mensajes" class="btn-cancel" style="padding: 8px 12px; font-size: 0.85rem;" title="Limpiar filtros">✕</a>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="custom-admin-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">#</th>
+                            <th>Remitente</th>
+                            <th>Correo Electrónico</th>
+                            <th>Asunto</th>
+                            <th>Mensaje / Comentario</th>
+                            <th>Fecha</th>
+                            <th style="text-align: center;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for msg in mensajes %}
+                        <tr>
+                            <td style="font-weight: 600; color: #888;">{{ msg.id }}</td>
+                            <td><strong>{{ msg.nombre }}</strong></td>
+                            <td>
+                                <a href="mailto:{{ msg.email }}" style="color: var(--primario); text-decoration: none;">
+                                    {{ msg.email }}
+                                </a>
+                            </td>
+                            <td>
+                                <span class="badge-asunto">{{ msg.asunto }}</span>
+                            </td>
+                            <td style="max-width: 320px;">
+                                <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ msg.mensaje }}">
+                                    {{ msg.mensaje }}
+                                </div>
+                            </td>
+                            <td style="color: #666; font-size: 0.85rem; white-space: nowrap;">
+                                {{ msg.fecha|date:"d/m/Y H:i" }}
+                            </td>
+                            <td style="text-align: center;">
+                                <div class="action-buttons" style="justify-content: center;">
+                                    <button type="button" class="btn-table-view" onclick="verMensaje('{{ msg.nombre|escapejs }}', '{{ msg.email|escapejs }}', '{{ msg.asunto|escapejs }}', '{{ msg.mensaje|escapejs }}', '{{ msg.fecha|date:"d/m/Y H:i" }}')">
+                                        👁️ Ver
+                                    </button>
+                                    <a href="{% url 'comentario_editar' msg.id %}" class="btn-table-edit" title="Editar este mensaje">
+                                        ✏️ Editar
+                                    </a>
+                                    <button type="button" class="btn-table-delete" onclick="confirmarEliminar('mensaje', '{{ msg.id }}', '{{ msg.asunto|escapejs }} de {{ msg.nombre|escapejs }}', '{% url 'comentario_eliminar' msg.id %}')" title="Eliminar este mensaje">
+                                        🗑️ Eliminar
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7">
+                                <div class="empty-table-state">
+                                    <div class="icon">💬</div>
+                                    <h3>No se encontraron mensajes</h3>
+                                    <p>{% if q_msg or asunto_filtro %}No hay mensajes que coincidan con tus criterios de búsqueda.{% else %}No se han recibido mensajes de contacto todavía.{% endif %}</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+    </main>
+
+    <!-- ========================================== -->
+    <!--  MODAL DE CONFIRMACIÓN DE ELIMINACIÓN      -->
+    <!-- ========================================== -->
+    <div id="modalEliminar" class="admin-modal-overlay">
+        <div class="admin-modal">
+            <div class="admin-modal-header" style="background-color: #c0392b;">
+                <h3 style="color: #fff;">Confirmar Eliminación</h3>
+                <button type="button" class="modal-close-btn" onclick="cerrarModal('modalEliminar')">&times;</button>
+            </div>
+            <div class="admin-modal-body">
+                <p>¿Estás seguro de que deseas eliminar permanentemente este registro de la base de datos?</p>
+                <div style="background-color: #fdf2f2; border: 1px solid #f5c2c7; padding: 12px; border-radius: 6px; margin: 12px 0;">
+                    <strong id="elementoEliminarTexto" style="color: #c0392b;"></strong>
+                </div>
+                <p style="font-size: 0.85rem; color: #888; margin: 0;">Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="admin-modal-footer">
+                <button type="button" class="btn-cancel" onclick="cerrarModal('modalEliminar')">Cancelar</button>
+                <form id="formEliminar" method="POST" action="" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-table-delete" style="padding: 10px 18px; font-size: 0.92rem;">
+                        Sí, Eliminar de la BD
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!--  MODAL DE VISUALIZACIÓN DE MENSAJE         -->
+    <!-- ========================================== -->
+    <div id="modalVerMensaje" class="admin-modal-overlay">
+        <div class="admin-modal" style="max-width: 600px;">
+            <div class="admin-modal-header">
+                <h3>Detalle del Mensaje de Contacto</h3>
+                <button type="button" class="modal-close-btn" onclick="cerrarModal('modalVerMensaje')">&times;</button>
+            </div>
+            <div class="admin-modal-body">
+                <div style="margin-bottom: 12px;">
+                    <span style="font-size: 0.82rem; text-transform: uppercase; color: #777; font-weight: 700;">Remitente:</span>
+                    <div id="modalMsgNombre" style="font-size: 1.1rem; font-weight: 700; color: var(--primario);"></div>
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <span style="font-size: 0.82rem; text-transform: uppercase; color: #777; font-weight: 700;">Correo Electrónico:</span>
+                    <div id="modalMsgEmail"></div>
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <span style="font-size: 0.82rem; text-transform: uppercase; color: #777; font-weight: 700;">Asunto y Fecha:</span>
+                    <div style="display: flex; gap: 10px; align-items: center; margin-top: 4px;">
+                        <span id="modalMsgAsunto" class="badge-asunto"></span>
+                        <span id="modalMsgFecha" style="font-size: 0.85rem; color: #666;"></span>
+                    </div>
+                </div>
+                <div style="margin-top: 16px;">
+                    <span style="font-size: 0.82rem; text-transform: uppercase; color: #777; font-weight: 700;">Mensaje:</span>
+                    <div id="modalMsgTexto" style="background: #f8f6f2; border: 1px solid var(--borde); border-radius: 6px; padding: 14px; margin-top: 6px; line-height: 1.6; white-space: pre-wrap;"></div>
+                </div>
+            </div>
+            <div class="admin-modal-footer">
+                <button type="button" class="btn-cancel" onclick="cerrarModal('modalVerMensaje')">Cerrar</button>
+                <a id="modalMsgResponderLink" href="#" class="btn-action-primary" style="padding: 8px 16px;">✉️ Responder por Correo</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts del Panel -->
+    <script>
+        function confirmarEliminar(tipo, id, nombre, urlAccion) {
+            document.getElementById('elementoEliminarTexto').textContent = nombre;
+            document.getElementById('formEliminar').action = urlAccion;
+            document.getElementById('modalEliminar').classList.add('active');
+        }
+
+        function verMensaje(nombre, email, asunto, texto, fecha) {
+            document.getElementById('modalMsgNombre').textContent = nombre;
+            document.getElementById('modalMsgEmail').innerHTML = '<a href="mailto:' + email + '" style="color:var(--primario);">' + email + '</a>';
+            document.getElementById('modalMsgAsunto').textContent = asunto;
+            document.getElementById('modalMsgFecha').textContent = fecha;
+            document.getElementById('modalMsgTexto').textContent = texto;
+            document.getElementById('modalMsgResponderLink').href = 'mailto:' + email + '?subject=' + encodeURIComponent('Respuesta a tu consulta: ' + asunto);
+            document.getElementById('modalVerMensaje').classList.add('active');
+        }
+
+        function cerrarModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Cerrar modal al hacer clic en el fondo
+        window.addEventListener('click', function(e) {
+            if (e.target.classList.contains('admin-modal-overlay')) {
+                e.target.classList.remove('active');
+            }
+        });
+
+        // Cerrar modal con Escape
+        window.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.admin-modal-overlay').forEach(function(modal) {
+                    modal.classList.remove('active');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -67,6 +67,35 @@ nav a:hover {
     color: var(--secundario);
 }
 
+.nav-admin-btn {
+    background-color: var(--primario);
+    color: var(--secundario) !important;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    border: 1px solid var(--secundario);
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.nav-admin-btn:hover {
+    background-color: var(--secundario);
+    color: var(--primario) !important;
+}
+
+.nav-logout-btn {
+    color: #c0392b !important;
+    font-weight: 600;
+}
+
+.nav-logout-btn:hover {
+    color: #a93226 !important;
+}
+
 h1 {
     font-family: var(--letra-principal-);
     line-height: 1.08;

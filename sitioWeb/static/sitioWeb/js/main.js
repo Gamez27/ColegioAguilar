@@ -33,102 +33,8 @@
     });
 })();
 
-//  INSCRIPCION 
-var formulario = document.getElementById('formInscripcion');
-
-if (formulario) {
-    var aspirantes = [];
-    var tablaAspirantes = document.getElementById('tablaAspirantes');
-    var cuerpoTabla = document.getElementById('cuerpoTabla');
-    var sinDatos = document.getElementById('sinDatos');
-    var mensaje = document.getElementById('mensaje');
-    var resumen = document.getElementById('resumen');
-    var totalAspirantes = document.getElementById('totalAspirantes');
-    var promedioGeneral = document.getElementById('promedioGeneral');
-
-    function agregarAspirante(nombre, email, telefono, carrera, promedio) {
-        var nuevoAspirante = {
-            id: aspirantes.length + 1,
-            nombre: nombre,
-            email: email,
-            telefono: telefono,
-            carrera: carrera,
-            promedio: promedio
-        };
-        aspirantes.push(nuevoAspirante);
-    }
-
-    function eliminarAspirante(indice) {
-        aspirantes.splice(indice, 1);
-        for (var i = 0; i < aspirantes.length; i++) {
-            aspirantes[i].id = i + 1;
-        }
-        mostrarTabla();
-    }
-    // Hacer accesible desde onclick en HTML
-    window.eliminarAspirante = eliminarAspirante;
-
-    function calcularPromedio() {
-        if (aspirantes.length === 0) return 0;
-        var suma = 0;
-        for (var i = 0; i < aspirantes.length; i++) {
-            suma = suma + aspirantes[i].promedio;
-        }
-        return (suma / aspirantes.length).toFixed(2);
-    }
-
-    function mostrarTabla() {
-        cuerpoTabla.innerHTML = '';
-
-        if (aspirantes.length === 0) {
-            tablaAspirantes.style.display = 'none';
-            sinDatos.style.display = 'block';
-            resumen.style.display = 'none';
-            return;
-        }
-
-        tablaAspirantes.style.display = 'table';
-        sinDatos.style.display = 'none';
-        resumen.style.display = 'block';
-
-        for (var i = 0; i < aspirantes.length; i++) {
-            var fila = document.createElement('tr');
-            fila.innerHTML =
-                '<td>' + aspirantes[i].id + '</td>' +
-                '<td>' + aspirantes[i].nombre + '</td>' +
-                '<td>' + aspirantes[i].email + '</td>' +
-                '<td>' + aspirantes[i].telefono + '</td>' +
-                '<td>' + aspirantes[i].carrera + '</td>' +
-                '<td>' + aspirantes[i].promedio + '</td>' +
-                '<td><button class="btn-eliminar" onclick="eliminarAspirante(' + i + ')">Eliminar</button></td>';
-            cuerpoTabla.appendChild(fila);
-        }
-
-        totalAspirantes.textContent = aspirantes.length;
-        promedioGeneral.textContent = calcularPromedio();
-    }
-
-    function mostrarMensaje() {
-        mensaje.style.display = 'block';
-        setTimeout(function () {
-            mensaje.style.display = 'none';
-        }, 3000);
-    }
-
-    formulario.addEventListener('submit', function (e) {
-        e.preventDefault();
-        var nombre = document.getElementById('nombre').value;
-        var email = document.getElementById('email').value;
-        var telefono = document.getElementById('telefono').value;
-        var carrera = document.getElementById('carrera').value;
-        var promedio = parseFloat(document.getElementById('promedio').value);
-
-        agregarAspirante(nombre, email, telefono, carrera, promedio);
-        mostrarTabla();
-        mostrarMensaje();
-        formulario.reset();
-    });
-}
+//  INSCRIPCION (Manejado por Django directamente)
+// El procesamiento y guardado de datos en SQLite ahora lo maneja Django en el backend.
 
 
 //  NOSOTROS 
@@ -185,7 +91,7 @@ var carrerasGrid = document.getElementById('carrerasGrid');
 
 if (carrerasGrid) {
     var carreras = [
-        { nombre: 'Ingenieria en Sistemas', categoria: 'ingenieria', duracion: '9 semestres', descripcion: 'Desarrolla soluciones tecnologicas innovadoras para empresas y organizaciones.', enlace: 'sistemas.html' },
+        { nombre: 'Ingenieria en Sistemas', categoria: 'ingenieria', duracion: '9 semestres', descripcion: 'Desarrolla soluciones tecnologicas innovadoras para empresas y organizaciones.', enlace: '/sistemas/' },
         { nombre: 'Ingenieria Civil', categoria: 'ingenieria', duracion: '10 semestres', descripcion: 'Diseña y construye infraestructura que transforma ciudades y comunidades.' },
         { nombre: 'Ingenieria Industrial', categoria: 'ingenieria', duracion: '9 semestres', descripcion: 'Optimiza procesos productivos para mejorar la eficiencia empresarial.' },
         { nombre: 'Medicina General', categoria: 'ciencias', duracion: '12 semestres', descripcion: 'Forma profesionales de la salud comprometidos con el bienestar de la sociedad.' },
@@ -415,27 +321,7 @@ if (formContacto) {
         }
     }
 
-    formContacto.addEventListener('submit', function (e) {
-        e.preventDefault();
-
-        var nuevoMensaje = {
-            nombre: document.getElementById('contactNombre').value,
-            email: document.getElementById('contactEmail').value,
-            asunto: document.getElementById('contactAsunto').value,
-            mensaje: document.getElementById('contactMensaje').value
-        };
-
-        mensajes.push(nuevoMensaje);
-
-        var exito = document.getElementById('contactMensajeExito');
-        exito.style.display = 'block';
-
-        formContacto.reset();
-
-        setTimeout(function () {
-            exito.style.display = 'none';
-        }, 4000);
-    });
+    // El envío del formulario de contacto ahora lo gestiona Django directamente hacia SQLite.
 
     mostrarPreguntas();
 }

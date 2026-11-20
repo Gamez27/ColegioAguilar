@@ -1,0 +1,108 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ titulo }} - Panel de Administración</title>
+    <link rel="icon" href="{% static 'sitioWeb/img/icono.png' %}" type="image/png">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;700&display=swap">
+    <link rel="stylesheet" href="{% static 'sitioWeb/css/admin.css' %}">
+</head>
+<body class="admin-body">
+
+    <!-- Header Superior -->
+    <header class="admin-header">
+        <div class="admin-header-inner">
+            <a href="{% url 'panel_admin' %}" class="admin-brand">
+                <img src="{% static 'sitioWeb/img/icono.png' %}" alt="Logo">
+                <div class="admin-brand-text">
+                    <h1>Colegio Águilas</h1>
+                    <span>Panel de Control Administrativo</span>
+                </div>
+            </a>
+
+            <div class="admin-nav-actions">
+                <a href="{% url 'panel_admin' %}?tab=mensajes" class="btn-admin-nav btn-nav-web">
+                    ← Volver a Comentarios
+                </a>
+                <a href="{% url 'admin_logout' %}" class="btn-admin-nav btn-nav-logout">
+                    Cerrar Sesión
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="admin-container">
+        <div class="form-card">
+            <div class="form-card-header">
+                <h2>{{ titulo }}</h2>
+                <p>Edita los detalles del mensaje o comentario de contacto recibido.</p>
+            </div>
+
+            <div class="form-card-body">
+                {% if form.errors %}
+                    <div class="flash-alert error" style="margin-bottom: 1.5rem;">
+                        <div>
+                            <strong>Por favor corrige los siguientes errores:</strong>
+                            <ul style="margin: 6px 0 0 16px; padding: 0;">
+                                {% for field, errors in form.errors.items %}
+                                    {% for error in errors %}
+                                        <li>{{ field|capfirst }}: {{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="admin-form-group">
+                        <label for="{{ form.nombre.id_for_label }}">Nombre del Remitente *</label>
+                        {{ form.nombre }}
+                        {% if form.nombre.errors %}
+                            <div class="form-error">{{ form.nombre.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label for="{{ form.email.id_for_label }}">Correo Electrónico *</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <div class="form-error">{{ form.email.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label for="{{ form.asunto.id_for_label }}">Asunto *</label>
+                        {{ form.asunto }}
+                        {% if form.asunto.errors %}
+                            <div class="form-error">{{ form.asunto.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label for="{{ form.mensaje.id_for_label }}">Contenido del Mensaje / Comentario *</label>
+                        {{ form.mensaje }}
+                        {% if form.mensaje.errors %}
+                            <div class="form-error">{{ form.mensaje.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="{% url 'panel_admin' %}?tab=mensajes" class="btn-cancel">
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn-action-primary" style="padding: 10px 24px; font-size: 1rem;">
+                            💾 {{ accion }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

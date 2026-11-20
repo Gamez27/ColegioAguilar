@@ -1,0 +1,24 @@
+# Entornos virtuales
+venv/
+.venv/
+env/
+Colegio/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Archivos temporales y de sistema
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# IDEs
+.vscode/
+.idea/
+
+# Static files compilados en producción
+staticfiles/
