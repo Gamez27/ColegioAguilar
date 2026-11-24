@@ -1,4 +1,4 @@
-# 🦅 Colegio Águilas - Portal de Administración y CRUD
+# 🦅 Colegio Águilar - Portal de Administración y CRUD
 
 Este proyecto cuenta con un sistema completo y profesional de **Administración, Autenticación (Login/Logout) y CRUD** para la gestión de inscripciones (aspirantes) y mensajes/comentarios de contacto, integrado directamente con la base de datos SQLite y preparado para subirse a Internet.
 
@@ -8,7 +8,7 @@ Este proyecto cuenta con un sistema completo y profesional de **Administración,
 
 | Ruta | Descripción | Acceso |
 | :--- | :--- | :--- |
-| `/` | Página de Inicio del Colegio Águilas | Público |
+| `/` | Página de Inicio del Colegio Águilar | Público |
 | `/inscripcion/` | Formulario de inscripción para aspirantes | Público / Modo Admin |
 | `/contacto/` | Formulario de contacto y preguntas frecuentes | Público |
 | `/admin-panel/login/` | **Pantalla de Inicio de Sesión de Administración** | Público |
