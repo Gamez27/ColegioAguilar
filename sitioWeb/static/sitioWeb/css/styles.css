@@ -17,17 +17,30 @@
 
 }
 
-* {
+*, *::before, *::after {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
+}
 
+html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    width: 100%;
 }
 
 body {
     font-family: var(--letra-secundaria-);
     line-height: 1.6;
     color: #333;
+    overflow-x: hidden;
+    width: 100%;
+    min-width: 320px;
+}
 
+img, picture, video, canvas, svg {
+    max-width: 100%;
+    height: auto;
 }
 
 /* Header */
@@ -38,24 +51,28 @@ header {
     position: sticky;
     top: 0;
     z-index: 100;
-
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.26);
+    width: 100%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 nav {
-    width: auto;
-    padding: 0px 2rem;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-
+    box-sizing: border-box;
 }
 
 ul {
     list-style: none;
     display: flex;
-    gap: 2rem;
+    gap: clamp(0.6rem, 1.4vw, 1.8rem);
+    align-items: center;
 }
+
 
 nav a {
     color: var(--marino);
@@ -1048,9 +1065,9 @@ table tbody tr:hover {
 }
 
 /* ================================================
-   BREAKPOINT: ≤ 768px  (tablets / móviles grandes)
+   BREAKPOINT: ≤ 992px  (tablets / móviles)
    ================================================ */
-@media (max-width: 768px) {
+@media (max-width: 992px) {
 
     /* --- NAVEGACIÓN HAMBURGUESA --- */
     .nav-hamburguesa {
@@ -1068,26 +1085,29 @@ table tbody tr:hover {
     .botonesNav {
         display: none;
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
         gap: 0;
         position: absolute;
         top: 100%;
         left: 0;
         right: 0;
         background-color: var(--fondo-base);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        padding: 1rem 1.2rem;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        padding: 0.8rem 1rem;
         z-index: 150;
+        border-top: 1px solid rgba(34,13,42,0.06);
     }
 
     .botonesNav.abierto {
         display: flex;
+        max-height: calc(100vh - 70px);
+        overflow-y: auto;
     }
 
     .botonesNav a {
         display: block;
         width: 100%;
-        padding: .75rem 1rem;
+        padding: .85rem 1rem;
         border-bottom: 1px solid rgba(34,13,42,0.08);
         font-size: 1rem;
     }
@@ -1095,6 +1115,23 @@ table tbody tr:hover {
     .botonesNav a:last-child {
         border-bottom: none;
     }
+
+    .botonesNav .nav-admin-btn {
+        margin: 8px 0;
+        width: 100%;
+        justify-content: center;
+        padding: 10px 16px;
+        box-sizing: border-box;
+    }
+
+    .botonesNav .nav-logout-btn {
+        margin: 4px 0 8px;
+        width: 100%;
+        text-align: center;
+        padding: 8px 16px;
+        box-sizing: border-box;
+    }
+
 
     /* --- INDEX --- */
     .inicio {
@@ -1968,3 +2005,648 @@ table tbody tr:hover {
     background-color: var(--secundario);
     color: var(--primario);
 }
+
+/* ============================================================
+   ESTILOS COMPLEMENTARIOS: FORMULARIO UNIVERSITARIO Y EXPEDIENTE
+   ============================================================ */
+
+.form-seccion-bloque {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e0d8ce;
+}
+
+.form-seccion-bloque:last-of-type {
+    border-bottom: none;
+    margin-bottom: 1rem;
+    padding-bottom: 0;
+}
+
+.form-subtitulo {
+    font-size: 1.1rem;
+    font-family: var(--letra-principal-);
+    color: var(--primario);
+    margin-bottom: 1rem;
+    padding-bottom: 0.3rem;
+    position: relative;
+}
+
+.form-subtitulo::after {
+    content: '';
+    display: block;
+    width: 36px;
+    height: 2px;
+    background-color: var(--secundario);
+    margin-top: 4px;
+}
+
+.form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.form-grid-3 {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 16px;
+}
+
+.form-ayuda-texto {
+    font-size: 0.82rem;
+    color: #777;
+    margin-top: 4px;
+}
+
+.file-upload-card {
+    background-color: #faf7f2;
+    border: 1px dashed #c9a84c;
+    border-radius: 4px;
+    padding: 16px 20px;
+    margin-top: 8px;
+}
+
+.file-upload-card input[type="file"] {
+    background: #ffffff;
+    border: 1px solid #d5cbbf;
+    padding: 8px 12px;
+}
+
+/* Tarjeta de Confirmación de Matrícula (Éxito) */
+.confirmacion-container {
+    max-width: 760px;
+    margin: 40px auto 60px;
+    background-color: #ffffff;
+    border: 1px solid #e0d8ce;
+    box-shadow: 0 4px 18px rgba(34, 13, 42, 0.08);
+}
+
+.confirmacion-header {
+    background-color: var(--primario);
+    color: #ffffff;
+    padding: 32px 36px;
+    text-align: center;
+}
+
+.confirmacion-header h2 {
+    color: var(--secundario);
+    font-family: var(--letra-principal-);
+    font-size: 2rem;
+    margin-bottom: 8px;
+}
+
+.confirmacion-header p {
+    color: #e5ded5;
+    font-size: 1rem;
+}
+
+.confirmacion-body {
+    padding: 36px;
+}
+
+.matricula-banner {
+    background-color: #f5f1eb;
+    border-left: 4px solid var(--secundario);
+    border-radius: 4px;
+    padding: 24px;
+    margin-bottom: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.matricula-etiqueta {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.matricula-numero {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--primario);
+    font-family: monospace, sans-serif;
+    letter-spacing: 2px;
+}
+
+.credenciales-acceso-box {
+    background: #ffffff;
+    border: 1px solid #dfd7cc;
+    border-radius: 4px;
+    padding: 12px 18px;
+}
+
+.credenciales-fila {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    font-size: 0.92rem;
+    padding: 4px 0;
+}
+
+.credenciales-fila strong {
+    color: var(--primario);
+}
+
+.confirmacion-info-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 28px;
+    font-size: 0.95rem;
+}
+
+.confirmacion-info-tabla td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #f0ebe2;
+}
+
+.confirmacion-info-tabla td:first-child {
+    font-weight: 600;
+    color: var(--primario);
+    width: 35%;
+}
+
+.confirmacion-acciones {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 24px;
+}
+
+/* Portal de Consulta de Alumno */
+.consulta-login-card {
+    max-width: 480px;
+    margin: 40px auto 60px;
+    background-color: #ffffff;
+    border: 1px solid #e0d8ce;
+    box-shadow: 0 4px 18px rgba(34, 13, 42, 0.08);
+    padding: 40px 36px;
+}
+
+.consulta-login-card h2 {
+    font-family: var(--letra-principal-);
+    color: var(--primario);
+    font-size: 1.8rem;
+    margin-bottom: 8px;
+}
+
+.consulta-login-card p {
+    color: #666;
+    font-size: 0.95rem;
+    margin-bottom: 24px;
+}
+
+.consulta-info-pildora {
+    background-color: #f5f1eb;
+    border: 1px solid #e0d8ce;
+    border-radius: 4px;
+    padding: 10px 14px;
+    font-size: 0.88rem;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.consulta-info-pildora strong {
+    color: var(--primario);
+}
+
+/* Expediente Académico del Aspirante */
+.expediente-wrapper {
+    max-width: 960px;
+    margin: 30px auto 60px;
+    padding: 0 20px;
+}
+
+.expediente-cabecera {
+    background-color: var(--primario);
+    color: #ffffff;
+    padding: 28px 32px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.expediente-titular h2 {
+    font-family: var(--letra-principal-);
+    color: var(--secundario);
+    font-size: 1.8rem;
+    margin-bottom: 4px;
+}
+
+.expediente-titular span {
+    color: #e5ded5;
+    font-size: 0.95rem;
+}
+
+.expediente-badge-matricula {
+    background-color: rgba(201, 168, 76, 0.15);
+    border: 1px solid var(--secundario);
+    color: var(--secundario);
+    padding: 10px 18px;
+    border-radius: 4px;
+    text-align: right;
+}
+
+.expediente-badge-matricula .lbl {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: block;
+}
+
+.expediente-badge-matricula .num {
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: monospace, sans-serif;
+    letter-spacing: 1.5px;
+}
+
+.expediente-cuerpo {
+    background-color: #ffffff;
+    border: 1px solid #e0d8ce;
+    border-top: none;
+    padding: 36px 32px;
+    box-shadow: 0 4px 18px rgba(34, 13, 42, 0.06);
+}
+
+.expediente-seccion {
+    margin-bottom: 30px;
+}
+
+.expediente-seccion h3 {
+    font-size: 1.15rem;
+    font-family: var(--letra-principal-);
+    color: var(--primario);
+    border-bottom: 2px solid var(--secundario);
+    padding-bottom: 6px;
+    margin-bottom: 16px;
+}
+
+.expediente-grid-campos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.expediente-campo {
+    background-color: #fbf9f6;
+    border: 1px solid #ede7df;
+    padding: 12px 16px;
+    border-radius: 4px;
+}
+
+.expediente-campo .label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #777;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.expediente-campo .valor {
+    font-size: 0.98rem;
+    font-weight: 600;
+    color: var(--primario);
+    word-break: break-word;
+}
+
+.expediente-archivo-box {
+    background-color: #f7f5f0;
+    border: 1px solid #decbb3;
+    padding: 16px 20px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.btn-descargar-archivo {
+    background-color: var(--primario);
+    color: var(--secundario);
+    border: 1px solid var(--secundario);
+    padding: 8px 18px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-descargar-archivo:hover {
+    background-color: var(--secundario);
+    color: var(--primario);
+}
+
+.expediente-barra-acciones {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid #e0d8ce;
+}
+
+/* Indicador numérico en la guía de admisión sin emojis */
+.info-icono-numero {
+    width: 32px;
+    height: 32px;
+    background-color: var(--primario);
+    color: var(--secundario);
+    border: 1px solid var(--secundario);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+/* ============================================================
+   RESPONSIVIDAD AVANZADA Y COMPLETA PARA TODA LA WEB
+   ============================================================ */
+
+/* --- Breakpoint: Tablets y Pantallas Medianas (≤ 992px) --- */
+@media (max-width: 992px) {
+    .formulario-seccion {
+        grid-template-columns: 1fr;
+        padding: clamp(24px, 5vw, 40px) clamp(16px, 4vw, 24px);
+        gap: 32px;
+    }
+
+    .form-container,
+    .inscripcion-info {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .form-grid-2,
+    .form-grid-3 {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .confirmacion-container {
+        margin: 20px auto;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .expediente-wrapper {
+        margin: 16px auto 40px;
+        width: 100%;
+        padding: 0 14px;
+    }
+
+    .expediente-cabecera {
+        padding: 22px 20px;
+    }
+
+    .expediente-cuerpo {
+        padding: 24px 20px;
+    }
+}
+
+/* --- Breakpoint: Móviles y Tablets Pequeñas (≤ 768px) --- */
+@media (max-width: 768px) {
+    /* Inputs y selects adaptables */
+    .form-grupo input,
+    .form-grupo select,
+    .form-grupo textarea {
+        font-size: 16px; /* Evita zoom automático en Safari/iOS */
+        padding: 12px 14px;
+        width: 100%;
+    }
+
+    .btn-enviar {
+        width: 100%;
+        text-align: center;
+        padding: 14px 20px;
+    }
+
+    /* Expediente del Alumno en móvil */
+    .expediente-cabecera {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+        gap: 14px;
+        padding: 20px 16px;
+    }
+
+    .expediente-titular h2 {
+        font-size: clamp(1.4rem, 5vw, 1.8rem);
+    }
+
+    .expediente-badge-matricula {
+        width: 100%;
+        text-align: center;
+        padding: 8px 12px;
+    }
+
+    .expediente-badge-matricula .num {
+        font-size: 1.4rem;
+    }
+
+    .expediente-grid-campos {
+        grid-template-columns: 1fr !important;
+        gap: 10px;
+    }
+
+    .expediente-campo {
+        grid-column: span 1 !important;
+        padding: 10px 14px;
+    }
+
+    .expediente-archivo-box {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+        gap: 12px;
+        padding: 14px;
+    }
+
+    .btn-descargar-archivo {
+        width: 100%;
+        text-align: center;
+        display: block;
+        padding: 10px 14px;
+    }
+
+    .expediente-barra-acciones {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .expediente-barra-acciones button,
+    .expediente-barra-acciones a {
+        width: 100%;
+        text-align: center;
+        display: block;
+        padding: 12px;
+    }
+
+    /* Comprobante de Confirmación en móvil */
+    .matricula-banner {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+        gap: 16px;
+        padding: 18px 14px;
+    }
+
+    .credenciales-acceso-box {
+        width: 100%;
+    }
+
+    .credenciales-fila {
+        flex-direction: column;
+        gap: 2px;
+        border-bottom: 1px dashed #e0d8ce;
+        padding-bottom: 6px;
+        margin-bottom: 6px;
+    }
+
+    .credenciales-fila:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .confirmacion-acciones {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .confirmacion-acciones a,
+    .confirmacion-acciones button {
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Tabla de confirmación adaptada como tarjeta vertical */
+    .confirmacion-info-tabla,
+    .confirmacion-info-tabla tbody,
+    .confirmacion-info-tabla tr,
+    .confirmacion-info-tabla td {
+        display: block;
+        width: 100%;
+    }
+
+    .confirmacion-info-tabla tr {
+        border-bottom: 1px solid #f0ebe2;
+        padding: 8px 0;
+    }
+
+    .confirmacion-info-tabla td {
+        border-bottom: none;
+        padding: 2px 0;
+    }
+
+    .confirmacion-info-tabla td:first-child {
+        width: 100%;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        color: #777;
+    }
+
+    .confirmacion-info-tabla td:last-child {
+        font-size: 0.98rem;
+    }
+}
+
+/* --- Breakpoint: Móviles Pequeños (≤ 480px) --- */
+@media (max-width: 480px) {
+    nav {
+        padding: 0 1rem;
+    }
+
+    .icono img {
+        max-height: 40px;
+    }
+
+    .pagina-titulo {
+        padding: 40px 16px 28px;
+    }
+
+    .pagina-titulo h1 {
+        font-size: clamp(1.7rem, 7vw, 2.2rem);
+    }
+
+    .formulario-seccion {
+        padding: 20px 12px 40px;
+    }
+
+    .form-subtitulo {
+        font-size: 1.05rem;
+    }
+
+    .consulta-login-card {
+        padding: 24px 16px;
+        margin: 16px auto 40px;
+    }
+
+    .cupo-status-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .matricula-numero {
+        font-size: clamp(1.6rem, 8vw, 2.2rem);
+    }
+
+    .file-upload-card {
+        padding: 12px 14px;
+    }
+
+    .file-upload-card input[type="file"] {
+        font-size: 0.82rem;
+    }
+
+    .bloqueo-detalles {
+        flex-direction: column;
+        width: 100%;
+        gap: 6px;
+    }
+
+    .bloqueo-chip {
+        width: 100%;
+        text-align: center;
+        box-sizing: border-box;
+    }
+}
+
+@media print {
+    header, footer, .expediente-barra-acciones, .nav-hamburguesa {
+        display: none !important;
+    }
+    body {
+        background: #ffffff !important;
+        color: #000000 !important;
+    }
+    .expediente-wrapper {
+        margin: 0 !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+    }
+    .expediente-cabecera {
+        background: #220d2a !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
+

@@ -29,11 +29,12 @@
                 <a href="{% url 'campus' %}">CAMPUS</a>
                 <a href="{% url 'contacto' %}">CONTACTO</a>
                 <a href="{% url 'inscripcion' %}">INSCRIBETE</a>
+                <a href="{% url 'consulta_login' %}">CONSULTA</a>
                 {% if user.is_authenticated %}
-                <a href="{% url 'panel_admin' %}" class="nav-admin-btn">⚙️ PANEL</a>
+                <a href="{% url 'panel_admin' %}" class="nav-admin-btn">PANEL</a>
                 <a href="{% url 'admin_logout' %}" class="nav-logout-btn">SALIR</a>
                 {% else %}
-                <a href="{% url 'admin_login' %}" class="nav-admin-btn">🔒 ACCESO</a>
+                <a href="{% url 'admin_login' %}" class="nav-admin-btn">ACCESO</a>
                 {% endif %}
             </ul>
         </nav>

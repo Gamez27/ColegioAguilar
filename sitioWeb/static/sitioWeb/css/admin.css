@@ -224,7 +224,12 @@
     gap: 8px;
     border-bottom: 2px solid var(--borde);
     margin-bottom: 1.8rem;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
 }
+
 
 .tab-link {
     padding: 12px 24px;
@@ -379,8 +384,10 @@
 /* Tabla Estilizada */
 .table-responsive {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     width: 100%;
 }
+
 
 .custom-admin-table {
     width: 100%;
@@ -862,34 +869,141 @@
     color: var(--secundario);
 }
 
-/* Responsividad */
+/* Grids Responsivos para Formularios de Admin */
+.admin-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.admin-grid-3 {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 16px;
+}
+
+/* Responsividad Completa para Panel de Administración */
+@media (max-width: 900px) {
+    .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}
+
 @media (max-width: 768px) {
+    .admin-container {
+        padding: 0 1rem;
+        margin: 1.2rem auto;
+    }
+
+    .admin-header {
+        padding: 0.8rem 1rem;
+    }
+
     .admin-header-inner {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
+        gap: 0.8rem;
     }
 
     .admin-nav-actions {
         width: 100%;
         justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .admin-user-pill {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .btn-nav-web,
+    .btn-nav-logout {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .metrics-grid {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+    }
+
+    .admin-tabs {
+        gap: 4px;
+    }
+
+    .tab-link {
+        padding: 10px 16px;
+        font-size: 0.9rem;
     }
 
     .table-header {
         flex-direction: column;
         align-items: stretch;
+        gap: 12px;
     }
 
     .table-controls {
         flex-direction: column;
         align-items: stretch;
+        gap: 10px;
     }
 
-    .search-input {
+    .search-form {
+        flex-direction: column;
+        width: 100%;
+        gap: 8px;
+    }
+
+    .search-input,
+    .filter-select {
         width: 100%;
     }
 
     .btn-action-primary,
     .btn-action-secondary {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .admin-grid-2,
+    .admin-grid-3 {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+    }
+
+    .form-card {
+        padding: 18px 14px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .form-actions a,
+    .form-actions button {
+        width: 100%;
+        text-align: center;
         justify-content: center;
     }
 }
+
+@media (max-width: 480px) {
+    .admin-brand-text h1 {
+        font-size: 1.15rem;
+    }
+
+    .metric-card {
+        padding: 1rem;
+    }
+
+    .metric-icon {
+        width: 42px;
+        height: 42px;
+        font-size: 1.3rem;
+    }
+}
+

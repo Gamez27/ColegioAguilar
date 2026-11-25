@@ -56,8 +56,17 @@
                     </div>
                 {% endif %}
 
-                <form method="POST">
+                <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
+
+                    {% if aspirante and aspirante.matricula %}
+                        <div class="admin-form-group" style="background: #f8f6f2; border: 1px solid #e0d8ce; padding: 12px 16px; border-radius: 4px;">
+                            <label style="margin-bottom: 2px; color: #666; font-size: 0.82rem; text-transform: uppercase;">Matrícula Asignada</label>
+                            <div style="font-size: 1.3rem; font-family: monospace; font-weight: 700; color: #220d2a;">{{ aspirante.matricula }}</div>
+                        </div>
+                    {% endif %}
+
+                    <h3 style="font-size: 1.05rem; color: #220d2a; margin: 18px 0 10px; border-bottom: 2px solid #c9a84c; padding-bottom: 4px;">1. Datos Personales del Aspirante</h3>
 
                     <div class="admin-form-group">
                         <label for="{{ form.nombre.id_for_label }}">Nombre Completo *</label>
@@ -65,6 +74,42 @@
                         {% if form.nombre.errors %}
                             <div class="form-error">{{ form.nombre.errors.0 }}</div>
                         {% endif %}
+                    </div>
+
+                    <div class="admin-grid-2">
+                        <div class="admin-form-group">
+                            <label for="{{ form.curp.id_for_label }}">CURP</label>
+                            {{ form.curp }}
+                            {% if form.curp.errors %}
+                                <div class="form-error">{{ form.curp.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="admin-form-group">
+                            <label for="{{ form.fecha_nacimiento.id_for_label }}">Fecha de Nacimiento</label>
+                            {{ form.fecha_nacimiento }}
+                            {% if form.fecha_nacimiento.errors %}
+                                <div class="form-error">{{ form.fecha_nacimiento.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="admin-grid-2">
+                        <div class="admin-form-group">
+                            <label for="{{ form.genero.id_for_label }}">Género</label>
+                            {{ form.genero }}
+                            {% if form.genero.errors %}
+                                <div class="form-error">{{ form.genero.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="admin-form-group">
+                            <label for="{{ form.telefono.id_for_label }}">Teléfono / Celular *</label>
+                            {{ form.telefono }}
+                            {% if form.telefono.errors %}
+                                <div class="form-error">{{ form.telefono.errors.0 }}</div>
+                            {% endif %}
+                        </div>
                     </div>
 
                     <div class="admin-form-group">
@@ -75,13 +120,35 @@
                         {% endif %}
                     </div>
 
-                    <div class="admin-form-group">
-                        <label for="{{ form.telefono.id_for_label }}">Teléfono / Celular *</label>
-                        {{ form.telefono }}
-                        {% if form.telefono.errors %}
-                            <div class="form-error">{{ form.telefono.errors.0 }}</div>
-                        {% endif %}
+                    <h3 style="font-size: 1.05rem; color: #220d2a; margin: 24px 0 10px; border-bottom: 2px solid #c9a84c; padding-bottom: 4px;">2. Domicilio</h3>
+
+                    <div class="admin-grid-2">
+                        <div class="admin-form-group">
+                            <label for="{{ form.direccion.id_for_label }}">Calle y Número</label>
+                            {{ form.direccion }}
+                        </div>
+                        <div class="admin-form-group">
+                            <label for="{{ form.colonia.id_for_label }}">Colonia</label>
+                            {{ form.colonia }}
+                        </div>
                     </div>
+
+                    <div class="admin-grid-3">
+                        <div class="admin-form-group">
+                            <label for="{{ form.ciudad.id_for_label }}">Ciudad</label>
+                            {{ form.ciudad }}
+                        </div>
+                        <div class="admin-form-group">
+                            <label for="{{ form.estado.id_for_label }}">Estado</label>
+                            {{ form.estado }}
+                        </div>
+                        <div class="admin-form-group">
+                            <label for="{{ form.codigo_postal.id_for_label }}">C.P.</label>
+                            {{ form.codigo_postal }}
+                        </div>
+                    </div>
+
+                    <h3 style="font-size: 1.05rem; color: #220d2a; margin: 24px 0 10px; border-bottom: 2px solid #c9a84c; padding-bottom: 4px;">3. Datos Académicos</h3>
 
                     <div class="admin-form-group">
                         <label for="{{ form.carrera.id_for_label }}">Carrera de Interés *</label>
@@ -91,20 +158,76 @@
                         {% endif %}
                     </div>
 
+                    <div class="admin-grid-2">
+                        <div class="admin-form-group">
+                            <label for="{{ form.modalidad.id_for_label }}">Modalidad</label>
+                            {{ form.modalidad }}
+                        </div>
+                        <div class="admin-form-group">
+                            <label for="{{ form.turno.id_for_label }}">Turno</label>
+                            {{ form.turno }}
+                        </div>
+                    </div>
+
+                    <div class="admin-grid-3">
+                        <div class="admin-form-group">
+                            <label for="{{ form.escuela_procedencia.id_for_label }}">Preparatoria de Procedencia</label>
+                            {{ form.escuela_procedencia }}
+                        </div>
+                        <div class="admin-form-group" style="grid-column: span 2;">
+                            <label for="{{ form.promedio.id_for_label }}">Promedio (0.00 - 10.00) *</label>
+                            {{ form.promedio }}
+                            {% if form.promedio.errors %}
+                                <div class="form-error">{{ form.promedio.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <h3 style="font-size: 1.05rem; color: #220d2a; margin: 24px 0 10px; border-bottom: 2px solid #c9a84c; padding-bottom: 4px;">4. Datos del Padre o Tutor</h3>
+
+                    <div class="admin-grid-2">
+                        <div class="admin-form-group">
+                            <label for="{{ form.tutor_nombre.id_for_label }}">Nombre del Padre o Tutor</label>
+                            {{ form.tutor_nombre }}
+                        </div>
+                        <div class="admin-form-group">
+                            <label for="{{ form.tutor_parentesco.id_for_label }}">Parentesco</label>
+                            {{ form.tutor_parentesco }}
+                        </div>
+                    </div>
+
+                    <div class="admin-grid-2">
+                        <div class="admin-form-group">
+                            <label for="{{ form.tutor_telefono.id_for_label }}">Teléfono del Tutor</label>
+                            {{ form.tutor_telefono }}
+                        </div>
+                        <div class="admin-form-group">
+                            <label for="{{ form.tutor_email.id_for_label }}">Correo del Tutor</label>
+                            {{ form.tutor_email }}
+                        </div>
+                    </div>
+
+                    <h3 style="font-size: 1.05rem; color: #220d2a; margin: 24px 0 10px; border-bottom: 2px solid #c9a84c; padding-bottom: 4px;">5. Documento Adjunto (PDF o TXT)</h3>
+
                     <div class="admin-form-group">
-                        <label for="{{ form.promedio.id_for_label }}">Promedio de Bachillerato (0.00 - 10.00) *</label>
-                        {{ form.promedio }}
-                        {% if form.promedio.errors %}
-                            <div class="form-error">{{ form.promedio.errors.0 }}</div>
+                        <label for="{{ form.documento.id_for_label }}">Archivo de Documentación</label>
+                        {{ form.documento }}
+                        {% if aspirante and aspirante.documento %}
+                            <div style="margin-top: 6px; font-size: 0.88rem;">
+                                Archivo actual: <a href="{{ aspirante.documento.url }}" target="_blank" style="color: #27ae60; font-weight: 600;">{{ aspirante.documento.name }}</a>
+                            </div>
+                        {% endif %}
+                        {% if form.documento.errors %}
+                            <div class="form-error">{{ form.documento.errors.0 }}</div>
                         {% endif %}
                     </div>
 
-                    <div class="form-actions">
+                    <div class="form-actions" style="margin-top: 28px;">
                         <a href="{% url 'panel_admin' %}?tab=aspirantes" class="btn-cancel">
                             Cancelar
                         </a>
                         <button type="submit" class="btn-action-primary" style="padding: 10px 24px; font-size: 1rem;">
-                            💾 {{ accion }}
+                            {{ accion }}
                         </button>
                     </div>
                 </form>

@@ -8,8 +8,11 @@ from django.http import HttpResponse
 from django.urls import reverse
 
 from .models import Aspirante, MensajeContacto, Alumno, ConfiguracionSitio
-from .forms import AdminLoginForm, AspiranteForm, MensajeContactoForm, ConfiguracionSitioForm
+from .forms import AdminLoginForm, AspiranteForm, MensajeContactoForm, ConfiguracionSitioForm, ConsultaLoginForm
 from .notifications import enviar_notificacion_limite
+
+PASSWORD_CONSULTA_ASPIRANTE = 'cnsulta123'
+
 
 # ============================================================
 #  VISTAS PÚBLICAS
@@ -59,7 +62,7 @@ def inscripcion(request):
             )
             return redirect('inscripcion')
 
-        form = AspiranteForm(request.POST)
+        form = AspiranteForm(request.POST, request.FILES)
         if form.is_valid():
             aspirante = form.save()
             nuevo_total = Aspirante.objects.count()
@@ -70,8 +73,10 @@ def inscripcion(request):
                 config.limite_notificado = True
                 config.save(update_fields=['limite_notificado'])
 
-            messages.success(request, '¡Tu inscripción fue registrada con éxito en el sistema!')
-            return redirect('inscripcion')
+            # Guardar matrícula generada en la sesión para la confirmación
+            request.session['registro_exitoso_matricula'] = aspirante.matricula
+            messages.success(request, f'¡Tu registro universitario fue exitoso! Tu matrícula asignada es {aspirante.matricula}.')
+            return redirect('inscripcion_exito')
         else:
             for field, errors in form.errors.items():
                 for error in errors:
@@ -88,6 +93,96 @@ def inscripcion(request):
         'cupos_disponibles': cupos_disponibles,
         'porcentaje_ocupado': porcentaje_ocupado,
     })
+
+
+def inscripcion_exito(request):
+    """
+    Pantalla de confirmación tras finalizar el registro de un nuevo aspirante.
+    Muestra la matrícula generada y las instrucciones para acceder a su expediente.
+    """
+    matricula = request.session.get('registro_exitoso_matricula')
+    aspirante = None
+    if matricula:
+        aspirante = Aspirante.objects.filter(matricula=matricula).first()
+
+    if not aspirante:
+        # Si no hay matrícula reciente en sesión, redirigir al formulario
+        return redirect('inscripcion')
+
+    return render(request, 'sitioWeb/inscripcion_exito.html', {
+        'aspirante': aspirante,
+        'matricula': aspirante.matricula,
+        'password_consulta': PASSWORD_CONSULTA_ASPIRANTE,
+    })
+
+
+# ============================================================
+#  PORTAL DE CONSULTA PARA ALUMNOS / ASPIRANTES
+# ============================================================
+
+def consulta_login(request):
+    """
+    Permite al alumno acceder a su información utilizando su matrícula
+    y la contraseña fija 'cnsulta123' (o 'consulta123').
+    """
+    # Si ya tiene sesión activa de consulta, enviarlo directo a su expediente
+    if request.session.get('aspirante_matricula'):
+        return redirect('consulta_expediente')
+
+    if request.method == 'POST':
+        form = ConsultaLoginForm(request.POST)
+        if form.is_valid():
+            matricula_ingresada = form.cleaned_data['matricula'].strip()
+            password_ingresado = form.cleaned_data['password'].strip()
+
+            # Verificar contraseña solicitada
+            if password_ingresado in [PASSWORD_CONSULTA_ASPIRANTE, 'consulta123']:
+                aspirante = Aspirante.objects.filter(matricula=matricula_ingresada).first()
+                if aspirante:
+                    request.session['aspirante_matricula'] = aspirante.matricula
+                    messages.success(request, f'Bienvenido, {aspirante.nombre}. Consulta tu información académica.')
+                    return redirect('consulta_expediente')
+                else:
+                    messages.error(request, 'No se encontró ningún alumno con la matrícula proporcionada. Verifica tu número de matrícula.')
+            else:
+                messages.error(request, 'Contraseña incorrecta. Recuerda que la contraseña para consulta es cnsulta123.')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{error}")
+    else:
+        form = ConsultaLoginForm()
+
+    return render(request, 'sitioWeb/consulta_login.html', {
+        'form': form,
+    })
+
+
+def consulta_expediente(request):
+    """
+    Muestra el expediente completo del alumno consultante (datos personales,
+    curp, tutor, datos académicos, matrícula y archivo adjunto).
+    """
+    matricula = request.session.get('aspirante_matricula')
+    if not matricula:
+        messages.warning(request, 'Debes iniciar sesión con tu matrícula y contraseña para consultar tu información.')
+        return redirect('consulta_login')
+
+    aspirante = get_object_or_404(Aspirante, matricula=matricula)
+
+    return render(request, 'sitioWeb/consulta_expediente.html', {
+        'aspirante': aspirante,
+    })
+
+
+def consulta_logout(request):
+    """
+    Cierra la sesión de consulta del alumno.
+    """
+    request.session.pop('aspirante_matricula', None)
+    messages.info(request, 'Has cerrado la sesión de consulta correctamente.')
+    return redirect('consulta_login')
+
 
 
 # ============================================================
@@ -140,6 +235,8 @@ def panel_admin(request):
     if q_asp:
         aspirantes_qs = aspirantes_qs.filter(
             Q(nombre__icontains=q_asp) |
+            Q(matricula__icontains=q_asp) |
+            Q(curp__icontains=q_asp) |
             Q(email__icontains=q_asp) |
             Q(telefono__icontains=q_asp) |
             Q(carrera__icontains=q_asp)
@@ -219,7 +316,7 @@ def panel_admin(request):
 def aspirante_crear(request):
     config = ConfiguracionSitio.get_solo()
     if request.method == 'POST':
-        form = AspiranteForm(request.POST)
+        form = AspiranteForm(request.POST, request.FILES)
         if form.is_valid():
             aspirante = form.save()
             nuevo_total = Aspirante.objects.count()
@@ -228,7 +325,7 @@ def aspirante_crear(request):
                 config.limite_notificado = True
                 config.save(update_fields=['limite_notificado'])
 
-            messages.success(request, f'Aspirante "{aspirante.nombre}" registrado exitosamente en la base de datos.')
+            messages.success(request, f'Aspirante "{aspirante.nombre}" con matrícula {aspirante.matricula} registrado exitosamente.')
             return redirect('panel_admin')
     else:
         form = AspiranteForm()
@@ -243,7 +340,7 @@ def aspirante_crear(request):
 def aspirante_editar(request, id):
     aspirante = get_object_or_404(Aspirante, id=id)
     if request.method == 'POST':
-        form = AspiranteForm(request.POST, instance=aspirante)
+        form = AspiranteForm(request.POST, request.FILES, instance=aspirante)
         if form.is_valid():
             form.save()
             messages.success(request, f'Los datos de "{aspirante.nombre}" se actualizaron correctamente en la base de datos.')
@@ -283,27 +380,52 @@ def aspirante_eliminar(request, id):
 
 @login_required(login_url='admin_login')
 def aspirantes_exportar_csv(request):
-    """Permite exportar todos los aspirantes registrados a un archivo CSV."""
+    """Permite exportar todos los aspirantes registrados a un archivo CSV completo."""
     response = HttpResponse(content_type='text/csv; charset=utf-8')
     response['Content-Disposition'] = 'attachment; filename="aspirantes_colegio_aguilas.csv"'
     
     # Agregar BOM para que Excel en español/Windows lo abra con los acentos perfectos
     response.write('\ufeff')
     writer = csv.writer(response)
-    writer.writerow(['ID', 'Nombre', 'Correo', 'Teléfono', 'Carrera', 'Promedio', 'Fecha de Registro'])
+    writer.writerow([
+        'ID', 'Matrícula', 'Nombre Completo', 'CURP', 'Fecha Nacimiento', 'Género',
+        'Correo', 'Teléfono', 'Domicilio', 'Colonia', 'Ciudad', 'Estado', 'C.P.',
+        'Carrera', 'Modalidad', 'Turno', 'Preparatoria Procedencia', 'Promedio',
+        'Nombre Padre/Tutor', 'Parentesco', 'Teléfono Tutor', 'Correo Tutor',
+        'Documento Adjunto', 'Estatus', 'Fecha de Registro'
+    ])
 
     for asp in Aspirante.objects.all().order_by('-fecha_registro'):
         writer.writerow([
             asp.id,
+            asp.matricula or '',
             asp.nombre,
+            asp.curp or '',
+            asp.fecha_nacimiento.strftime('%Y-%m-%d') if asp.fecha_nacimiento else '',
+            asp.genero or '',
             asp.email,
             asp.telefono,
+            asp.direccion or '',
+            asp.colonia or '',
+            asp.ciudad or '',
+            asp.estado or '',
+            asp.codigo_postal or '',
             asp.carrera,
+            asp.modalidad or '',
+            asp.turno or '',
+            asp.escuela_procedencia or '',
             asp.promedio,
+            asp.tutor_nombre or '',
+            asp.tutor_parentesco or '',
+            asp.tutor_telefono or '',
+            asp.tutor_email or '',
+            asp.documento.url if asp.documento else 'Sin archivo',
+            asp.estatus or 'Registrado',
             asp.fecha_registro.strftime('%Y-%m-%d %H:%M') if asp.fecha_registro else '',
         ])
 
     return response
+
 
 
 # ============================================================

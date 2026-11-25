@@ -147,7 +147,7 @@
                     <!-- Buscador -->
                     <form method="GET" action="{% url 'panel_admin' %}" class="search-form">
                         <input type="hidden" name="tab" value="aspirantes">
-                        <input type="text" name="q_asp" value="{{ q_asp }}" placeholder="Buscar por nombre, correo..." class="search-input">
+                        <input type="text" name="q_asp" value="{{ q_asp }}" placeholder="Buscar por matrícula, nombre, curp, correo..." class="search-input">
                         
                         <!-- Filtro de Carrera -->
                         <select name="carrera" class="filter-select" onchange="this.form.submit()">
@@ -157,7 +157,7 @@
                             {% endfor %}
                         </select>
 
-                        <button type="submit" class="btn-action-primary" style="padding: 9px 12px;">🔍</button>
+                        <button type="submit" class="btn-action-primary" style="padding: 9px 12px;">Buscar</button>
                         {% if q_asp or carrera_filtro %}
                             <a href="{% url 'panel_admin' %}?tab=aspirantes" class="btn-cancel" style="padding: 8px 12px; font-size: 0.85rem;" title="Limpiar filtros">✕</a>
                         {% endif %}
@@ -165,12 +165,12 @@
 
                     <!-- Exportar CSV -->
                     <a href="{% url 'aspirantes_exportar_csv' %}" class="btn-action-secondary" title="Descargar en formato Excel/CSV">
-                        📥 Exportar CSV
+                        Exportar CSV
                     </a>
 
                     <!-- Agregar nuevo -->
                     <a href="{% url 'aspirante_crear' %}" class="btn-action-primary">
-                        ➕ Nueva Inscripción
+                        Nueva Inscripción
                     </a>
                 </div>
             </div>
@@ -179,36 +179,62 @@
                 <table class="custom-admin-table">
                     <thead>
                         <tr>
-                            <th style="width: 50px;">#</th>
-                            <th>Nombre del Aspirante</th>
-                            <th>Correo Electrónico</th>
-                            <th>Teléfono</th>
+                            <th>Matrícula</th>
+                            <th>Aspirante / CURP</th>
+                            <th>Contacto</th>
                             <th>Carrera</th>
+                            <th>Padre / Tutor</th>
                             <th>Promedio</th>
-                            <th>Fecha Registro</th>
+                            <th>Documento</th>
+                            <th>Fecha</th>
                             <th style="text-align: center;">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for asp in aspirantes %}
                         <tr>
-                            <td style="font-weight: 600; color: #888;">{{ asp.id }}</td>
-                            <td><strong>{{ asp.nombre }}</strong></td>
                             <td>
-                                <a href="mailto:{{ asp.email }}" style="color: var(--primario); text-decoration: none;">
+                                <span style="font-family: monospace; font-weight: 700; color: #220d2a; background: #f5f1eb; padding: 4px 8px; border-radius: 4px; font-size: 0.95rem;">
+                                    {{ asp.matricula|default:"Pendiente" }}
+                                </span>
+                            </td>
+                            <td>
+                                <strong>{{ asp.nombre }}</strong>
+                                {% if asp.curp %}
+                                    <div style="font-size: 0.78rem; color: #666; font-family: monospace;">CURP: {{ asp.curp }}</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="mailto:{{ asp.email }}" style="color: var(--primario); text-decoration: none; font-size: 0.88rem; display: block;">
                                     {{ asp.email }}
                                 </a>
+                                <small style="color: #666;">Tel: {{ asp.telefono }}</small>
                             </td>
                             <td>
-                                <a href="tel:{{ asp.telefono }}" style="color: #555; text-decoration: none;">
-                                    {{ asp.telefono }}
-                                </a>
+                                <span style="font-weight: 500;">{{ asp.carrera }}</span>
+                                <div style="font-size: 0.78rem; color: #888;">{{ asp.modalidad|default:"Presencial" }} &bull; {{ asp.turno|default:"Matutino" }}</div>
                             </td>
-                            <td><span style="font-weight: 500;">{{ asp.carrera }}</span></td>
+                            <td>
+                                {% if asp.tutor_nombre %}
+                                    <div style="font-size: 0.88rem; font-weight: 500;">{{ asp.tutor_nombre }}</div>
+                                    <small style="color: #666;">{{ asp.tutor_parentesco|default:"Tutor" }} &bull; {{ asp.tutor_telefono|default:"" }}</small>
+                                {% else %}
+                                    <span style="color: #aaa; font-size: 0.85rem;">No registrado</span>
+                                {% endif %}
+                            </td>
                             <td>
                                 <span class="badge-promedio {% if asp.promedio >= 9.0 %}alto{% elif asp.promedio >= 8.0 %}medio{% else %}bajo{% endif %}">
                                     {{ asp.promedio }}
                                 </span>
+                            </td>
+                            <td>
+                                {% if asp.documento %}
+                                    <a href="{{ asp.documento.url }}" target="_blank" style="color: #27ae60; font-weight: 600; font-size: 0.85rem; text-decoration: underline;" title="Descargar archivo">
+                                        Ver Archivo
+                                    </a>
+                                {% else %}
+                                    <span style="color: #aaa; font-size: 0.85rem;">Sin archivo</span>
+                                {% endif %}
                             </td>
                             <td style="color: #666; font-size: 0.85rem; white-space: nowrap;">
                                 {{ asp.fecha_registro|date:"d/m/Y H:i" }}
@@ -216,19 +242,18 @@
                             <td style="text-align: center;">
                                 <div class="action-buttons" style="justify-content: center;">
                                     <a href="{% url 'aspirante_editar' asp.id %}" class="btn-table-edit" title="Editar este aspirante">
-                                        ✏️ Editar
+                                        Editar
                                     </a>
                                     <button type="button" class="btn-table-delete" onclick="confirmarEliminar('aspirante', '{{ asp.id }}', '{{ asp.nombre|escapejs }}', '{% url 'aspirante_eliminar' asp.id %}')" title="Eliminar este aspirante">
-                                        🗑️ Eliminar
+                                        Eliminar
                                     </button>
                                 </div>
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="8">
+                            <td colspan="9">
                                 <div class="empty-table-state">
-                                    <div class="icon">📋</div>
                                     <h3>No se encontraron aspirantes</h3>
                                     <p>{% if q_asp or carrera_filtro %}Intenta cambiar los términos de búsqueda o filtros.{% else %}Aún no hay inscripciones registradas en la base de datos.{% endif %}</p>
                                     <div style="margin-top: 1rem;">

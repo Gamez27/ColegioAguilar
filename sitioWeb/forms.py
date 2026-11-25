@@ -1,3 +1,4 @@
+import os
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from .models import Aspirante, MensajeContacto, Alumno, ConfiguracionSitio
@@ -22,6 +23,26 @@ class AdminLoginForm(AuthenticationForm):
     )
 
 
+class ConsultaLoginForm(forms.Form):
+    matricula = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'class': 'form-input',
+            'placeholder': 'Ej: 2243520111',
+            'autocomplete': 'off',
+            'autofocus': True,
+        }),
+        label='Matrícula de Aspirante'
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-input',
+            'placeholder': 'Ingresa tu contraseña de consulta',
+            'autocomplete': 'current-password',
+        }),
+        label='Contraseña'
+    )
+
+
 class AspiranteForm(forms.ModelForm):
     CARRERAS_CHOICES = [
         ('', 'Selecciona una carrera'),
@@ -36,19 +57,85 @@ class AspiranteForm(forms.ModelForm):
         ('Biologia', 'Biología'),
     ]
 
+    MODALIDAD_CHOICES = [
+        ('Presencial', 'Presencial (Escolarizada)'),
+        ('Sabatina', 'Ejecutiva (Sabatina)'),
+        ('En linea', 'En Línea'),
+    ]
+
+    TURNO_CHOICES = [
+        ('Matutino', 'Turno Matutino'),
+        ('Vespertino', 'Turno Vespertino'),
+    ]
+
+    GENERO_CHOICES = [
+        ('', 'Selecciona tu género'),
+        ('Masculino', 'Masculino'),
+        ('Femenino', 'Femenino'),
+        ('Otro', 'Otro'),
+        ('Prefiero no decir', 'Prefiero no especificar'),
+    ]
+
+    PARENTESCO_CHOICES = [
+        ('', 'Selecciona el parentesco'),
+        ('Padre', 'Padre'),
+        ('Madre', 'Madre'),
+        ('Tutor Legal', 'Tutor(a) Legal'),
+        ('Abuelo/a', 'Abuelo / Abuela'),
+        ('Tio/a', 'Tío / Tía'),
+        ('Hermano/a', 'Hermano(a) Mayor'),
+        ('Otro', 'Otro familiar o tutor'),
+    ]
+
     carrera = forms.ChoiceField(
         choices=CARRERAS_CHOICES,
         widget=forms.Select(attrs={'class': 'form-input', 'required': True})
     )
+    modalidad = forms.ChoiceField(
+        choices=MODALIDAD_CHOICES,
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-input'})
+    )
+    turno = forms.ChoiceField(
+        choices=TURNO_CHOICES,
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-input'})
+    )
+    genero = forms.ChoiceField(
+        choices=GENERO_CHOICES,
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-input'})
+    )
+    tutor_parentesco = forms.ChoiceField(
+        choices=PARENTESCO_CHOICES,
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-input'})
+    )
 
     class Meta:
         model = Aspirante
-        fields = ['nombre', 'email', 'telefono', 'carrera', 'promedio']
+        fields = [
+            'nombre', 'curp', 'fecha_nacimiento', 'genero', 'email', 'telefono',
+            'direccion', 'colonia', 'ciudad', 'estado', 'codigo_postal',
+            'carrera', 'modalidad', 'turno', 'escuela_procedencia', 'promedio',
+            'tutor_nombre', 'tutor_parentesco', 'tutor_telefono', 'tutor_email',
+            'documento'
+        ]
         widgets = {
             'nombre': forms.TextInput(attrs={
                 'class': 'form-input',
                 'placeholder': 'Ej: Juan Pérez García',
                 'required': True
+            }),
+            'curp': forms.TextInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Ej: ABCD010203HDFRRN09',
+                'maxlength': '18',
+                'style': 'text-transform: uppercase;',
+            }),
+            'fecha_nacimiento': forms.DateInput(attrs={
+                'type': 'date',
+                'class': 'form-input',
             }),
             'email': forms.EmailInput(attrs={
                 'class': 'form-input',
@@ -60,6 +147,31 @@ class AspiranteForm(forms.ModelForm):
                 'placeholder': 'Ej: 8341234567',
                 'required': True
             }),
+            'direccion': forms.TextInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Calle y número exterior / interior'
+            }),
+            'colonia': forms.TextInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Colonia o Fraccionamiento'
+            }),
+            'ciudad': forms.TextInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Ciudad o Municipio'
+            }),
+            'estado': forms.TextInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Estado'
+            }),
+            'codigo_postal': forms.TextInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Ej: 87000',
+                'maxlength': '10'
+            }),
+            'escuela_procedencia': forms.TextInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Ej: Preparatoria Federal / CBTIS 24'
+            }),
             'promedio': forms.NumberInput(attrs={
                 'class': 'form-input',
                 'placeholder': 'Ej: 9.5',
@@ -68,6 +180,22 @@ class AspiranteForm(forms.ModelForm):
                 'max': '10',
                 'required': True
             }),
+            'tutor_nombre': forms.TextInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Nombre completo del padre, madre o tutor'
+            }),
+            'tutor_telefono': forms.TextInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Ej: 8349876543'
+            }),
+            'tutor_email': forms.EmailInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'tutor@ejemplo.com'
+            }),
+            'documento': forms.FileInput(attrs={
+                'class': 'form-input file-input',
+                'accept': '.pdf,.txt,.doc,.docx'
+            }),
         }
 
     def clean_nombre(self):
@@ -75,6 +203,14 @@ class AspiranteForm(forms.ModelForm):
         if len(nombre) < 3:
             raise forms.ValidationError('El nombre debe tener al menos 3 caracteres.')
         return nombre
+
+    def clean_curp(self):
+        curp = self.cleaned_data.get('curp', '')
+        if curp:
+            curp = curp.strip().upper()
+            if len(curp) != 18:
+                raise forms.ValidationError('La CURP debe tener exactamente 18 caracteres.')
+        return curp
 
     def clean_promedio(self):
         promedio = self.cleaned_data.get('promedio')
@@ -89,6 +225,17 @@ class AspiranteForm(forms.ModelForm):
         if len(digits) < 7:
             raise forms.ValidationError('Ingresa un teléfono válido (al menos 7 dígitos).')
         return telefono
+
+    def clean_documento(self):
+        doc = self.cleaned_data.get('documento')
+        if doc:
+            if doc.size > 15 * 1024 * 1024:
+                raise forms.ValidationError('El archivo no debe exceder 15 MB.')
+            ext = os.path.splitext(doc.name)[1].lower()
+            if ext not in ['.pdf', '.txt', '.doc', '.docx']:
+                raise forms.ValidationError('Por favor sube un archivo en formato PDF o TXT (.pdf, .txt).')
+        return doc
+
 
 
 class MensajeContactoForm(forms.ModelForm):

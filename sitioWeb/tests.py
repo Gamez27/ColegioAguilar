@@ -301,3 +301,177 @@ class AdministracionCRUDTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Aspirante.objects.count(), 2)
 
+
+from django.core.files.uploadedfile import SimpleUploadedFile
+
+class InscripcionUniversitariaYConsultaTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        # Asegurar configuración con cupo disponible
+        self.config = ConfiguracionSitio.get_solo()
+        self.config.limite_inscripciones = 20
+        self.config.inscripciones_activas = True
+        self.config.save()
+
+    def test_generacion_automatica_matricula_10_digitos(self):
+        """Verifica que al registrar un aspirante se genere una matrícula de 10 dígitos que empiece con 224."""
+        aspirante = Aspirante.objects.create(
+            nombre='Alumno Prueba',
+            email='prueba@alumno.com',
+            telefono='8341112233',
+            carrera='Ingenieria en Sistemas',
+            promedio=9.4
+        )
+        self.assertIsNotNone(aspirante.matricula)
+        self.assertEqual(len(aspirante.matricula), 10)
+        self.assertTrue(aspirante.matricula.startswith('224'))
+
+    def test_inscripcion_con_datos_tutor_curp_y_archivo_txt(self):
+        """Verifica registro completo para universidad con datos de tutor, CURP y subida de archivo TXT."""
+        archivo_txt = SimpleUploadedFile(
+            'documento_prueba.txt',
+            b'Este es un documento TXT de prueba para admision universitaria.',
+            content_type='text/plain'
+        )
+
+        response = self.client.post(reverse('inscripcion'), {
+            'nombre': 'Mariana Morales Ruiz',
+            'curp': 'MORU040512HDFRRN01',
+            'fecha_nacimiento': '2004-05-12',
+            'genero': 'Femenino',
+            'email': 'mariana@ejemplo.com',
+            'telefono': '8341239876',
+            'direccion': 'Calle Hidalgo #456',
+            'colonia': 'Centro',
+            'ciudad': 'Ciudad Victoria',
+            'estado': 'Tamaulipas',
+            'codigo_postal': '87000',
+            'carrera': 'Ingenieria en Sistemas',
+            'modalidad': 'Presencial',
+            'turno': 'Matutino',
+            'escuela_procedencia': 'CBTIS 24',
+            'promedio': '9.65',
+            'tutor_nombre': 'Fernando Morales Gomez',
+            'tutor_parentesco': 'Padre',
+            'tutor_telefono': '8345558899',
+            'tutor_email': 'fernando.tutor@ejemplo.com',
+            'documento': archivo_txt,
+        }, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(Aspirante.objects.filter(email='mariana@ejemplo.com').exists())
+
+        nuevo = Aspirante.objects.get(email='mariana@ejemplo.com')
+        self.assertEqual(nuevo.curp, 'MORU040512HDFRRN01')
+        self.assertEqual(nuevo.tutor_nombre, 'Fernando Morales Gomez')
+        self.assertEqual(nuevo.tutor_parentesco, 'Padre')
+        self.assertEqual(nuevo.tutor_telefono, '8345558899')
+        self.assertIsNotNone(nuevo.matricula)
+        self.assertTrue(nuevo.matricula.startswith('224'))
+        self.assertTrue(bool(nuevo.documento))
+        self.assertIn('documento_prueba', nuevo.documento.name)
+
+        # Confirmación muestra la matrícula y contraseña cnsulta123
+        self.assertContains(response, nuevo.matricula)
+        self.assertContains(response, 'cnsulta123')
+
+    def test_inscripcion_con_archivo_pdf(self):
+        """Verifica que la subida de un archivo PDF funcione correctamente."""
+        archivo_pdf = SimpleUploadedFile(
+            'certificado_bachillerato.pdf',
+            b'%PDF-1.4 Archivo simulado de prueba',
+            content_type='application/pdf'
+        )
+
+        response = self.client.post(reverse('inscripcion'), {
+            'nombre': 'Alejandro Gomez Soto',
+            'curp': 'GOSA030101HDFRRN02',
+            'fecha_nacimiento': '2003-01-01',
+            'email': 'alejandro.pdf@ejemplo.com',
+            'telefono': '8343334444',
+            'carrera': 'Derecho',
+            'promedio': '8.80',
+            'tutor_nombre': 'Rosa Soto',
+            'tutor_parentesco': 'Madre',
+            'tutor_telefono': '8349991122',
+            'documento': archivo_pdf,
+        }, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        nuevo = Aspirante.objects.get(email='alejandro.pdf@ejemplo.com')
+        self.assertTrue(bool(nuevo.documento))
+        self.assertIn('certificado_bachillerato', nuevo.documento.name)
+
+    def test_acceso_portal_consulta_con_matricula_y_password_cnsulta123(self):
+        """Verifica que el alumno pueda acceder a su información con su matrícula y password cnsulta123."""
+        asp = Aspirante.objects.create(
+            nombre='Estudiante Registrado',
+            curp='ESTR020202HDFRRN03',
+            email='estudiante@colegio.edu.mx',
+            telefono='8347776655',
+            carrera='Medicina',
+            promedio=9.70,
+            tutor_nombre='Guadalupe Registrada',
+            tutor_parentesco='Madre',
+            tutor_telefono='8348889900'
+        )
+        matricula = asp.matricula
+
+        # Intento de acceso con matrícula y password cnsulta123
+        response = self.client.post(reverse('consulta_login'), {
+            'matricula': matricula,
+            'password': 'cnsulta123',
+        }, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Estudiante Registrado')
+        self.assertContains(response, matricula)
+        self.assertContains(response, 'ESTR020202HDFRRN03')
+        self.assertContains(response, 'Guadalupe Registrada')
+        self.assertContains(response, 'Medicina')
+
+    def test_acceso_portal_consulta_password_incorrecto(self):
+        """Verifica que si la contraseña es incorrecta, se niegue el acceso."""
+        asp = Aspirante.objects.create(
+            nombre='Alumno Seguridad',
+            email='seguridad@ejemplo.com',
+            telefono='8340001122',
+            carrera='Arquitectura',
+            promedio=8.9
+        )
+        response = self.client.post(reverse('consulta_login'), {
+            'matricula': asp.matricula,
+            'password': 'password_invalido',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Contraseña incorrecta')
+
+    def test_acceso_portal_consulta_matricula_inexistente(self):
+        """Verifica que si la matrícula no existe, no permita el ingreso."""
+        response = self.client.post(reverse('consulta_login'), {
+            'matricula': '9999999999',
+            'password': 'cnsulta123',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'No se encontró ningún alumno con la matrícula')
+
+    def test_cerrar_sesion_consulta(self):
+        """Verifica el cierre de sesión del portal de consulta."""
+        asp = Aspirante.objects.create(
+            nombre='Alumno Logout',
+            email='logout@ejemplo.com',
+            telefono='8345550011',
+            carrera='Biologia',
+            promedio=9.0
+        )
+        # Iniciar sesión
+        self.client.post(reverse('consulta_login'), {
+            'matricula': asp.matricula,
+            'password': 'cnsulta123',
+        })
+        # Cerrar sesión
+        response = self.client.get(reverse('consulta_logout'), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Has cerrado la sesión')
+
+

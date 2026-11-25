@@ -1,0 +1,294 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Expediente de Aspirante - Colegio Aguilas">
+    <link rel="icon" href="{% static 'sitioWeb/img/icono.png' %}" type="image/png">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;700&display=swap">
+    <link rel="stylesheet" href="{% static 'sitioWeb/css/styles.css' %}">
+    <title>Expediente de Aspirante - {{ aspirante.nombre }}</title>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <div class="icono">
+                <a href="{% url 'inicio' %}"><img src="{% static 'sitioWeb/img/icono.png' %}"
+                        alt="Logo Colegio Aguilas"></a>
+            </div>
+            <button class="nav-hamburguesa" id="navHamburguesa" aria-label="Abrir menú" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="botonesNav" id="botonesNav">
+                <a href="{% url 'nosotros' %}">NOSOTROS</a>
+                <a href="{% url 'admisiones' %}">ADMISIONES</a>
+                <a href="{% url 'campus' %}">CAMPUS</a>
+                <a href="{% url 'contacto' %}">CONTACTO</a>
+                <a href="{% url 'inscripcion' %}">INSCRIBETE</a>
+                <a href="{% url 'consulta_login' %}">CONSULTA</a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'panel_admin' %}" class="nav-admin-btn">PANEL</a>
+                <a href="{% url 'admin_logout' %}" class="nav-logout-btn">SALIR</a>
+                {% else %}
+                <a href="{% url 'admin_login' %}" class="nav-admin-btn">ACCESO</a>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <section class="pagina-titulo">
+        <span class="nom_seccion">--- SISTEMA DE CONTROL ESCOLAR</span>
+        <h1>Expediente Académico del Aspirante</h1>
+        <p>Hoja de registro oficial para el proceso de admisión universitaria al Colegio Águilas.</p>
+    </section>
+
+    <section style="padding: 10px 0 50px;">
+        <div class="expediente-wrapper">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="mensaje-alerta {% if message.tags %}{{ message.tags }}{% else %}success{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Cabecera del Expediente -->
+            <div class="expediente-cabecera">
+                <div class="expediente-titular">
+                    <h2>{{ aspirante.nombre }}</h2>
+                    <span>{{ aspirante.carrera }} &bull; Semestre 2026-II</span>
+                </div>
+
+                <div class="expediente-badge-matricula">
+                    <span class="lbl">Matrícula Institucional</span>
+                    <span class="num">{{ aspirante.matricula }}</span>
+                </div>
+            </div>
+
+            <!-- Cuerpo del Expediente -->
+            <div class="expediente-cuerpo">
+
+                <!-- 1. Datos Personales -->
+                <div class="expediente-seccion">
+                    <h3>1. Datos Personales del Alumno</h3>
+                    <div class="expediente-grid-campos">
+                        <div class="expediente-campo">
+                            <span class="label">Nombre Completo</span>
+                            <span class="valor">{{ aspirante.nombre }}</span>
+                        </div>
+
+                        <div class="expediente-campo">
+                            <span class="label">CURP</span>
+                            <span class="valor">{{ aspirante.curp|default:"No registrada" }}</span>
+                        </div>
+
+                        <div class="expediente-campo">
+                            <span class="label">Fecha de Nacimiento</span>
+                            <span class="valor">
+                                {% if aspirante.fecha_nacimiento %}
+                                    {{ aspirante.fecha_nacimiento|date:"d/m/Y" }}
+                                {% else %}
+                                    No especificada
+                                {% endif %}
+                            </span>
+                        </div>
+
+                        <div class="expediente-campo">
+                            <span class="label">Género</span>
+                            <span class="valor">{{ aspirante.genero|default:"No especificado" }}</span>
+                        </div>
+
+                        <div class="expediente-campo">
+                            <span class="label">Correo Electrónico</span>
+                            <span class="valor">{{ aspirante.email }}</span>
+                        </div>
+
+                        <div class="expediente-campo">
+                            <span class="label">Teléfono / WhatsApp</span>
+                            <span class="valor">{{ aspirante.telefono }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Domicilio -->
+                <div class="expediente-seccion">
+                    <h3>2. Domicilio Registrado</h3>
+                    <div class="expediente-grid-campos">
+                        <div class="expediente-campo" style="grid-column: span 2;">
+                            <span class="label">Calle y Número</span>
+                            <span class="valor">{{ aspirante.direccion|default:"No especificada" }}</span>
+                        </div>
+
+                        <div class="expediente-campo">
+                            <span class="label">Colonia / Fraccionamiento</span>
+                            <span class="valor">{{ aspirante.colonia|default:"No especificada" }}</span>
+                        </div>
+
+                        <div class="expediente-campo">
+                            <span class="label">Ciudad o Municipio</span>
+                            <span class="valor">{{ aspirante.ciudad|default:"No especificada" }}</span>
+                        </div>
+
+                        <div class="expediente-campo">
+                            <span class="label">Estado</span>
+                            <span class="valor">{{ aspirante.estado|default:"No especificado" }}</span>
+                        </div>
+
+                        <div class="expediente-campo">
+                            <span class="label">Código Postal</span>
+                            <span class="valor">{{ aspirante.codigo_postal|default:"No especificado" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Datos Académicos -->
+                <div class="expediente-seccion">
+                    <h3>3. Información Académica y Admisión</h3>
+                    <div class="expediente-grid-campos">
+                        <div class="expediente-campo" style="grid-column: span 2;">
+                            <span class="label">Carrera de Ingreso</span>
+                            <span class="valor">{{ aspirante.carrera }}</span>
+                        </div>
+
+                        <div class="expediente-campo">
+                            <span class="label">Modalidad</span>
+                            <span class="valor">{{ aspirante.modalidad|default:"Presencial" }}</span>
+                        </div>
+
+                        <div class="expediente-campo">
+                            <span class="label">Turno</span>
+                            <span class="valor">{{ aspirante.turno|default:"Matutino" }}</span>
+                        </div>
+
+                        <div class="expediente-campo">
+                            <span class="label">Preparatoria de Procedencia</span>
+                            <span class="valor">{{ aspirante.escuela_procedencia|default:"No registrada" }}</span>
+                        </div>
+
+                        <div class="expediente-campo">
+                            <span class="label">Promedio de Bachillerato</span>
+                            <span class="valor" style="color: #27ae60;">{{ aspirante.promedio }}</span>
+                        </div>
+
+                        <div class="expediente-campo">
+                            <span class="label">Estatus de Solicitud</span>
+                            <span class="valor" style="color: #2980b9;">{{ aspirante.estatus|default:"Registrado" }}</span>
+                        </div>
+
+                        <div class="expediente-campo">
+                            <span class="label">Fecha y Hora de Registro</span>
+                            <span class="valor">{{ aspirante.fecha_registro|date:"d/m/Y H:i" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Datos del Padre o Tutor -->
+                <div class="expediente-seccion">
+                    <h3>4. Información del Padre, Madre o Tutor</h3>
+                    <div class="expediente-grid-campos">
+                        <div class="expediente-campo" style="grid-column: span 2;">
+                            <span class="label">Nombre del Tutor</span>
+                            <span class="valor">{{ aspirante.tutor_nombre|default:"No especificado" }}</span>
+                        </div>
+
+                        <div class="expediente-campo">
+                            <span class="label">Parentesco</span>
+                            <span class="valor">{{ aspirante.tutor_parentesco|default:"No especificado" }}</span>
+                        </div>
+
+                        <div class="expediente-campo">
+                            <span class="label">Teléfono de Emergencia / Tutor</span>
+                            <span class="valor">{{ aspirante.tutor_telefono|default:"No especificado" }}</span>
+                        </div>
+
+                        <div class="expediente-campo">
+                            <span class="label">Correo Electrónico del Tutor</span>
+                            <span class="valor">{{ aspirante.tutor_email|default:"No especificado" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Archivo / Documento Adjunto -->
+                <div class="expediente-seccion">
+                    <h3>5. Archivo de Prueba Adjunto</h3>
+                    {% if aspirante.documento %}
+                        <div class="expediente-archivo-box">
+                            <div>
+                                <strong style="color: var(--primario); display: block; font-size: 0.98rem;">Archivo recibido en el registro</strong>
+                                <span style="font-size: 0.85rem; color: #666;">Ruta: {{ aspirante.documento.name }}</span>
+                            </div>
+                            <a href="{{ aspirante.documento.url }}" target="_blank" class="btn-descargar-archivo">
+                                Descargar / Ver Documento
+                            </a>
+                        </div>
+                    {% else %}
+                        <div style="background-color: #faf7f2; border: 1px dashed #d5cbbf; border-radius: 4px; padding: 16px; color: #777; font-size: 0.95rem;">
+                            No se adjuntó archivo durante el registro. Puedes presentar tus documentos directamente en ventanilla de servicios escolares.
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Barra de Acciones del Expediente -->
+                <div class="expediente-barra-acciones">
+                    <button type="button" onclick="window.print()" class="btn-secundario" style="padding: 10px 24px; cursor: pointer;">
+                        Imprimir Ficha de Registro
+                    </button>
+
+                    <a href="{% url 'consulta_logout' %}" class="btn-enviar" style="padding: 10px 24px; background-color: #721c24; border: 1px solid #721c24;">
+                        Cerrar Sesión de Consulta
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer">
+            <div>
+                <div class="footInfo">
+                    <h4>Aguilar</h4>
+                    <p>Colegio Águilas - Excelencia y vanguardia académica en educación universitaria.</p>
+                </div>
+            </div>
+            <div class="gridFoot">
+                <div class="footCol">
+                    <h4>INSTITUCION</h4>
+                    <ul>
+                        <li><a href="{% url 'nosotros' %}">Quienes somos</a></li>
+                        <li><a href="{% url 'nosotros' %}">Vision y Mision</a></li>
+                        <li><a href="{% url 'nosotros' %}">Autoridades</a></li>
+                    </ul>
+                </div>
+                <div class="footCol">
+                    <h4>ACADEMICO</h4>
+                    <ul>
+                        <li><a href="{% url 'admisiones' %}">Carreras</a></li>
+                        <li><a href="{% url 'campus' %}">Campus</a></li>
+                        <li><a href="{% url 'inscripcion' %}">Inscripciones</a></li>
+                    </ul>
+                </div>
+                <div class="footCol">
+                    <h4>CONTACTO</h4>
+                    <ul>
+                        <li><a href="{% url 'admisiones' %}">Admisiones</a></li>
+                        <li><a href="{% url 'contacto' %}">Contacto</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footfoot">
+            <p>Colegio las Aguilas</p>
+            <p><a href="{% url 'admin_login' %}" style="color: inherit; text-decoration: none; opacity: 0.8;">Portal Administrativo</a></p>
+            <p>Diseñado con excelencia</p>
+        </div>
+    </footer>
+
+    <script src="{% static 'sitioWeb/js/main.js' %}?v=2"></script>
+</body>
+
+</html>

@@ -22,3 +22,7 @@ Thumbs.db
 
 # Static files compilados en producción
 staticfiles/
+
+# Archivos multimedia subidos por usuarios
+media/
+

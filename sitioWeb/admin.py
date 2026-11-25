@@ -8,10 +8,11 @@ class AlumnoAdmin(admin.ModelAdmin):
 
 @admin.register(Aspirante)
 class AspiranteAdmin(admin.ModelAdmin):
-    list_display = ('id', 'nombre', 'email', 'telefono', 'carrera', 'promedio', 'fecha_registro')
-    list_filter = ('carrera', 'fecha_registro')
-    search_fields = ('nombre', 'email', 'telefono', 'carrera')
+    list_display = ('matricula', 'nombre', 'curp', 'email', 'telefono', 'carrera', 'promedio', 'estatus', 'fecha_registro')
+    list_filter = ('carrera', 'modalidad', 'turno', 'estatus', 'fecha_registro')
+    search_fields = ('matricula', 'nombre', 'curp', 'email', 'telefono', 'carrera', 'tutor_nombre')
     ordering = ('-fecha_registro',)
+
 
 @admin.register(MensajeContacto)
 class MensajeContactoAdmin(admin.ModelAdmin):

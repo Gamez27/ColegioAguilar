@@ -9,7 +9,14 @@ urlpatterns = [
     path('admisiones/', views.admisiones, name='admisiones'),
     path('campus/', views.campus, name='campus'),
     path('inscripcion/', views.inscripcion, name='inscripcion'),
+    path('inscripcion/exito/', views.inscripcion_exito, name='inscripcion_exito'),
     path('sistemas/', views.sistemas, name='sistemas'),
+
+    # Portal de Consulta de Alumno / Aspirante
+    path('consulta/', views.consulta_login, name='consulta_login'),
+    path('consulta/expediente/', views.consulta_expediente, name='consulta_expediente'),
+    path('consulta/salir/', views.consulta_logout, name='consulta_logout'),
+
 
     # Autenticación de Administración
     path('admin-panel/login/', views.admin_login, name='admin_login'),

@@ -1,0 +1,137 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Consulta de Aspirantes - Colegio Aguilas">
+    <link rel="icon" href="{% static 'sitioWeb/img/icono.png' %}" type="image/png">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;700&display=swap">
+    <link rel="stylesheet" href="{% static 'sitioWeb/css/styles.css' %}">
+    <title>Consulta de Aspirantes - Colegio Aguilas</title>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <div class="icono">
+                <a href="{% url 'inicio' %}"><img src="{% static 'sitioWeb/img/icono.png' %}"
+                        alt="Logo Colegio Aguilas"></a>
+            </div>
+            <button class="nav-hamburguesa" id="navHamburguesa" aria-label="Abrir menú" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="botonesNav" id="botonesNav">
+                <a href="{% url 'nosotros' %}">NOSOTROS</a>
+                <a href="{% url 'admisiones' %}">ADMISIONES</a>
+                <a href="{% url 'campus' %}">CAMPUS</a>
+                <a href="{% url 'contacto' %}">CONTACTO</a>
+                <a href="{% url 'inscripcion' %}">INSCRIBETE</a>
+                <a href="{% url 'consulta_login' %}">CONSULTA</a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'panel_admin' %}" class="nav-admin-btn">PANEL</a>
+                <a href="{% url 'admin_logout' %}" class="nav-logout-btn">SALIR</a>
+                {% else %}
+                <a href="{% url 'admin_login' %}" class="nav-admin-btn">ACCESO</a>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <section class="pagina-titulo">
+        <span class="nom_seccion">--- PORTAL DEL ALUMNO Y ASPIRANTE</span>
+        <h1>Consulta de Expediente</h1>
+        <p>Ingresa tu número de matrícula generado y la contraseña institucional para visualizar tu información académica y estatus de ingreso.</p>
+    </section>
+
+    <section style="padding: 20px clamp(12px, 3vw, 24px) 60px;">
+        <div class="consulta-login-card">
+            <h2>Acceso al Expediente</h2>
+            <p>Ingresa los datos proporcionados al finalizar tu registro de admisión.</p>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="mensaje-alerta {% if message.tags %}{{ message.tags }}{% else %}success{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="consulta-info-pildora">
+                Contraseña de acceso para consulta: <strong>cnsulta123</strong>
+            </div>
+
+            <form method="POST" action="{% url 'consulta_login' %}">
+                {% csrf_token %}
+
+                <div class="form-grupo">
+                    <label for="matricula">Matrícula de Aspirante *</label>
+                    <input type="text" id="matricula" name="matricula" placeholder="Ej: 2243520111" required autofocus value="{{ form.matricula.value|default:'' }}">
+                </div>
+
+                <div class="form-grupo">
+                    <label for="password">Contraseña *</label>
+                    <input type="password" id="password" name="password" placeholder="Ingresa tu contraseña" required>
+                </div>
+
+                <button type="submit" class="btn-enviar" style="width: 100%; text-align: center; margin-top: 10px;">
+                    Consultar Mi Expediente
+                </button>
+            </form>
+
+            <div style="text-align: center; margin-top: 24px; padding-top: 18px; border-top: 1px solid #e0d8ce; font-size: 0.9rem;">
+                <p style="color: #666; margin-bottom: 8px;">¿Aún no has completado tu registro?</p>
+                <a href="{% url 'inscripcion' %}" style="color: var(--primario); font-weight: 700; text-decoration: underline;">
+                    Iniciar Formulario de Inscripción
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer">
+            <div>
+                <div class="footInfo">
+                    <h4>Aguilar</h4>
+                    <p>Colegio Águilas - Excelencia y vanguardia académica en educación universitaria.</p>
+                </div>
+            </div>
+            <div class="gridFoot">
+                <div class="footCol">
+                    <h4>INSTITUCION</h4>
+                    <ul>
+                        <li><a href="{% url 'nosotros' %}">Quienes somos</a></li>
+                        <li><a href="{% url 'nosotros' %}">Vision y Mision</a></li>
+                        <li><a href="{% url 'nosotros' %}">Autoridades</a></li>
+                    </ul>
+                </div>
+                <div class="footCol">
+                    <h4>ACADEMICO</h4>
+                    <ul>
+                        <li><a href="{% url 'admisiones' %}">Carreras</a></li>
+                        <li><a href="{% url 'campus' %}">Campus</a></li>
+                        <li><a href="{% url 'inscripcion' %}">Inscripciones</a></li>
+                    </ul>
+                </div>
+                <div class="footCol">
+                    <h4>CONTACTO</h4>
+                    <ul>
+                        <li><a href="{% url 'admisiones' %}">Admisiones</a></li>
+                        <li><a href="{% url 'contacto' %}">Contacto</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footfoot">
+            <p>Colegio las Aguilas</p>
+            <p><a href="{% url 'admin_login' %}" style="color: inherit; text-decoration: none; opacity: 0.8;">Portal Administrativo</a></p>
+            <p>Diseñado con excelencia</p>
+        </div>
+    </footer>
+
+    <script src="{% static 'sitioWeb/js/main.js' %}?v=2"></script>
+</body>
+
+</html>
